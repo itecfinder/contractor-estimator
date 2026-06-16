@@ -39,8 +39,8 @@ export function ScanAnalysis() {
   const { t, current, updateCurrent, saveCurrent, go } = useApp()
   const [busy, setBusy] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
   if (!current) return null
-
   const addImage = (scanMode: ScanMode) => {
     updateCurrent({
       images: [
@@ -50,6 +50,26 @@ export function ScanAnalysis() {
     })
   }
 const handleUpload = (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0]
+
+  if (!file) return
+
+  const imageUrl = URL.createObjectURL(file)
+
+  updateCurrent({
+    images: [
+      ...current.images,
+      {
+        id: uid(),
+        url: imageUrl,
+        scanMode: "generic",
+      },
+    ],
+  })
+}
+  const handleCameraCapture = (
   event: React.ChangeEvent<HTMLInputElement>
 ) => {
   const file = event.target.files?.[0]
@@ -109,13 +129,20 @@ const handleUpload = (
   onChange={handleUpload}
   className="hidden"
 />
+      <input
+  ref={cameraInputRef}
+  type="file"
+  accept="image/*"
+  capture="environment"
+  onChange={handleCameraCapture}
+  className="hidden"
+/>
       <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
 
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
         <div className="grid grid-cols-2 gap-2.5">
-          
-          <Button variant="secondary" className="h-12" onClick={() => addImage("generic")}>
+          <Button variant="secondary" className="h-12" onClick={() => cameraInputRef.current?.click()}>
             <Camera className="size-5" />
             {t("takePhoto")}
           </Button>
