@@ -71,11 +71,14 @@ export function ScanAnalysis() {
     go("estimate")
   }
 
-  const captureButtons: { mode: ScanMode; label: string; icon: typeof Camera }[] = [
-    { mode: "roof", label: t("scanRoof"), icon: Ruler },
-    { mode: "walls", label: t("scanWalls"), icon: Ruler },
-    { mode: "floors", label: t("scanFloors"), icon: Ruler },
-  ]
+  const captureButtons = [
+  { mode: "roof", label: t("scanRoof"), icon: Ruler },
+  { mode: "walls", label: t("scanWalls"), icon: Ruler },
+  { mode: "floors", label: t("scanFloors"), icon: Ruler },
+  { mode: "bathroom", label: "Scan Bathroom", icon: Ruler },
+  { mode: "kitchen", label: "Scan Kitchen", icon: Ruler },
+  { mode: "lights", label: "Scan Lights", icon: Ruler },
+]
 
   return (
     <div>
