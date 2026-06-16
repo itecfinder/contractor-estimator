@@ -182,7 +182,33 @@ export function ScanAnalysis() {
             </div>
           </div>
         )}
+<div className="space-y-2">
 
+  <label className="text-sm font-semibold text-foreground">
+    Project Notes
+  </label>
+
+  <textarea
+    value={(current as any).notes || ""}
+    onChange={(e) =>
+      updateCurrent({
+        notes: e.target.value,
+      } as any)
+    }
+    placeholder={`Describe the work needed...
+
+Examples:
+
+• Replace toilet and tub
+• Paint bathroom walls
+• Install vinyl flooring
+• Replace cabinets
+• Repair drywall
+• Customer wants mid-grade materials`}
+    className="min-h-[140px] w-full rounded-xl border border-border bg-card p-3 text-sm"
+  />
+
+</div>
         {/* Analyze */}
         {!current.analysis && (
           <Button
