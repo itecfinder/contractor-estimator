@@ -4,8 +4,6 @@ import { useState, useRef } from "react"
 import {
   AlertTriangle,
   ArrowRight,
-  Camera,
-  HelpCircle,
   ImagePlus,
   Loader2,
   Ruler,
@@ -25,252 +23,219 @@ const severityCls: Record<string, string> = {
 }
 export function ScanAnalysis() {
   const { t, current, updateCurrent, saveCurrent, go } = useApp()
+const [busy, setBusy] = useState(false)
+const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [busy, setBusy] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+if (!current) return null
 
-  if (!current) return null
+const handleUpload = (
+event: React.ChangeEvent<HTMLInputElement>
+) => {
+const file = event.target.files?.[0]
 
-  const handleUpload = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0]
+if (!file) return
 
-    if (!file) return
+const imageUrl = URL.createObjectURL(file)
 
-    const imageUrl = URL.createObjectURL(file)
+updateCurrent({
+images: [
+...current.images,
+{
+id: uid(),
+url: imageUrl,
+scanMode: "generic",
+},
+],
+})
+}
 
-    updateCurrent({
-      images: [
-        ...current.images,
-        {
-          id: uid(),
-          url: imageUrl,
-          scanMode: "generic",
-        },
-      ],
-    })
-  }
+const removeImage = (id: string) => {
+updateCurrent({
+images: current.images.filter((i) => i.id !== id),
+})
+}
 
-  const handleCameraCapture = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0]
+const analyze = () => {
+if (!current.type) return
 
-    if (!file) return
+setBusy(true)
 
-    const imageUrl = URL.createObjectURL(file)
+setTimeout(() => {
+updateCurrent({
+analysis: generateAnalysis(current.type!),
+})
 
-    updateCurrent({
-      images: [
-        ...current.images,
-        {
-          id: uid(),
-          url: imageUrl,
-          scanMode: "generic",
-        },
-      ],
-    })
-  }
+setBusy(false)
 
-  const removeImage = (id: string) =>
-    updateCurrent({
-      images: current.images.filter((i) => i.id !== id),
-    })
+}, 1400)
+}
 
-  const analyze = () => {
-    if (!current.type) return
+const buildEstimate = () => {
+if (!current.type) return
 
-    setBusy(true)
+const items = current.lineItems.length
+? current.lineItems
+: generateLineItems(current.type)
 
-    setTimeout(() => {
-      updateCurrent({
-        analysis: generateAnalysis(current.type!),
-      })
+updateCurrent({
+lineItems: items,
+status: "estimated",
+})
 
-      setBusy(false)
-    }, 1400)
-  }
+saveCurrent()
+go("estimate")
+}
 
-  const buildEstimate = () => {
-    if (!current.type) return
+return (
 
-    const items = current.lineItems.length
-      ? current.lineItems
-      : generateLineItems(current.type)
+  <div>
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept="image/*"
+      onChange={handleUpload}
+      className="hidden"
+    />
 
-    updateCurrent({
-      lineItems: items,
-      status: "estimated",
-    })
+<ScreenHeader
+  title="Project Photos"
+  step={{ current: 2, total: 4 }}
+  back="capture"
+/>
 
-    saveCurrent()
-
-    go("estimate")
-  }
-  
-  return (
-    <div>
-      <input
-  ref={fileInputRef} type="file" accept="image/*"
-  onChange={handleUpload} className="hidden"/>
-
-    <ScreenHeader title="Project Photos" step={{ current: 2, total: 4 }}
-  back="capture"/>  
-      <div className="space-y-5 px-4 pt-4">
-        {/* Capture actions */}
-        <div className="grid grid-cols-2 gap-2.5">
+<div className="space-y-5 px-4 pt-4">
 
   <Button
-    variant="secondary"
-    className="h-12"
-    onClick={() => cameraInputRef.current?.click()}
-  >
-    <Camera className="size-5" />
-    Scan Project
-  </Button>
-
-  <Button
-    variant="outline"
-    className="h-12"
+    variant="default"
+    className="h-12 w-full"
     onClick={() => fileInputRef.current?.click()}
   >
     <ImagePlus className="size-5" />
     Add Project Photos
   </Button>
+
+  {current.images.length > 0 && (
+    <div>
+      <p className="mb-2 text-sm font-semibold">
+        {current.images.length} Photos Added
+      </p>
+
+      <div className="grid grid-cols-3 gap-2">
+        {current.images.map((img) => (
+          <div
+            key={img.id}
+            className="relative aspect-square overflow-hidden rounded-lg border"
+          >
+            <img
+              src={img.url}
+              alt=""
+              className="size-full object-cover"
+            />
+
+            <button
+              onClick={() => removeImage(img.id)}
+              className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-secondary"
+            >
+              <X className="size-3" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {!current.analysis && (
+    <Button
+      onClick={analyze}
+      disabled={current.images.length === 0 || busy}
+      className="h-12 w-full"
+    >
+      {busy ? (
+        <>
+          <Loader2 className="size-5 animate-spin" />
+          Analyzing...
+        </>
+      ) : (
+        <>
+          <Sparkles className="size-5" />
+          Analyze Project
+        </>
+      )}
+    </Button>
+  )}
+
+  {current.analysis && (
+    <div className="space-y-4">
+
+      <ResultCard
+        title={t("detectedSurfaces")}
+        icon={<Ruler className="size-4 text-primary" />}
+      >
+        {current.analysis.surfaces.map((s, i) => (
+          <li
+            key={i}
+            className="flex items-center justify-between py-1.5 text-sm"
+          >
+            <span>{s.label}</span>
+            <span>
+              {s.area} {s.unit}
+            </span>
+          </li>
+        ))}
+      </ResultCard>
+
+      <ResultCard
+        title={t("damageFindings")}
+        icon={<AlertTriangle className="size-4 text-chart-5" />}
+      >
+        {current.analysis.damage.map((d, i) => (
+          <li
+            key={i}
+            className="flex items-center justify-between py-1.5 text-sm"
+          >
+            <span>{d.label}</span>
+            <span
+              className={cn(
+                "text-xs font-semibold uppercase",
+                severityCls[d.severity]
+              )}
+            >
+              {d.severity}
+            </span>
+          </li>
+        ))}
+      </ResultCard>
+
+      <ResultCard
+        title={t("scopeItems")}
+        icon={<Sparkles className="size-4 text-primary" />}
+      >
+        {current.analysis.scope.map((s, i) => (
+          <li
+            key={i}
+            className="flex items-center gap-2 py-1 text-sm"
+          >
+            <span className="size-1.5 rounded-full bg-primary" />
+            {s}
+          </li>
+        ))}
+      </ResultCard>
+
+    </div>
+  )}
 </div>
 
-        {/* Photos */}
-        {current.images.length > 0 && (
-          <div>
-            <p className="mb-2 text-sm font-semibold text-foreground">
-              {current.images.length} {t("photosAdded")}
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {current.images.map((img) => (
-                <div key={img.id} className="relative aspect-square overflow-hidden rounded-lg border border-border">
-                  <img
-                    src={img.url || "/placeholder.svg"}
-                    alt={img.scanMode}
-                    className="size-full object-cover"
-                  />
-                  <button
-                    onClick={() => removeImage(img.id)}
-                    className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-secondary/80 text-secondary-foreground"
-                    aria-label="Remove"
-                  >
-                    <X className="size-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+{current.analysis && (
+  <StickyBar>
+    <Button
+      onClick={buildEstimate}
+      className="h-12 w-full"
+    >
+      Build Estimate
+      <ArrowRight className="size-5" />
+    </Button>
+  </StickyBar>
+)}
 
-        {/* Analyze */}
-        {!current.analysis && (
-          <Button
-            onClick={analyze}
-            disabled={ current.images.length === 0 || !(current as any).notes?.trim() ||busy}
-            className="h-12 w-full text-base font-semibold">
-            {busy ? (
-              <>
-                <Loader2 className="size-5 animate-spin" />
-                {t("analyzing")}
-              </>
-            ) : (
-              <>
-                <Sparkles className="size-5" />
-                {t("analyzeAI")}
-              </>
-            )}
-          </Button>
-        )}
-
-        {/* Results */}
-        {current.analysis && (
-          <div className="space-y-4">
-            <ResultCard title={t("detectedSurfaces")} icon={<Ruler className="size-4 text-primary" />}>
-              {current.analysis.surfaces.map((s, i) => (
-                <li key={i} className="flex items-center justify-between py-1.5 text-sm">
-                  <span className="text-foreground">{s.label}</span>
-                  <span className="flex items-center gap-2">
-                    <span className="font-semibold text-foreground">
-                      {s.area} {s.unit}
-                    </span>
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                      {Math.round(s.confidence * 100)}% {t("confidence")}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ResultCard>
-
-            <ResultCard title={t("damageFindings")} icon={<AlertTriangle className="size-4 text-chart-5" />}>
-              {current.analysis.damage.map((d, i) => (
-                <li key={i} className="flex items-center justify-between py-1.5 text-sm">
-                  <span className="text-foreground">{d.label}</span>
-                  <span className={cn("text-xs font-semibold uppercase", severityCls[d.severity])}>
-                    {d.severity}
-                  </span>
-                </li>
-              ))}
-            </ResultCard>
-
-            <ResultCard title={t("scopeItems")} icon={<Sparkles className="size-4 text-primary" />}>
-              {current.analysis.scope.map((s, i) => (
-                <li key={i} className="flex items-center gap-2 py-1 text-sm text-foreground">
-                  <span className="size-1.5 rounded-full bg-primary" />
-                  {s}
-                </li>
-              ))}
-            </ResultCard>
-
-            <div className="rounded-xl border border-dashed border-primary/40 bg-accent/40 p-4">
-              <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
-                <HelpCircle className="size-4 text-primary" />
-                {t("followUps")}
-              </p>
-              <ul className="space-y-1.5">
-                {current.analysis.followUps.map((q, i) => (
-                  <li key={i} className="text-sm text-muted-foreground">
-                    {q}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {current.analysis && (
-        <StickyBar>
-          <Button onClick={buildEstimate} className="h-12 w-full text-base font-semibold">
-            {t("buildEstimate")}
-            <ArrowRight className="size-5" />
-          </Button>
-        </StickyBar>
-      )}
-    </div>
-  )
-}
-
-function ResultCard({
-  title,
-  icon,
-  children,
-}: {
-  title: string
-  icon: React.ReactNode
-  children: React.ReactNode
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-foreground">
-        {icon}
-        {title}
-      </p>
-      <ul className="divide-y divide-border/60">{children}</ul>
-    </div>
-  )
-}
+  </div>
+)
