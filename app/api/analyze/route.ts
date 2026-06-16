@@ -1,12 +1,12 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST() {
   try {
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const response = await openai.responses.create({
       model: "gpt-4.1-mini",
       input: "Say ContractPro AI is connected successfully.",
