@@ -49,7 +49,26 @@ export function ScanAnalysis() {
       ],
     })
   }
+const handleUpload = (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0]
 
+  if (!file) return
+
+  const imageUrl = URL.createObjectURL(file)
+
+  updateCurrent({
+    images: [
+      ...current.images,
+      {
+        id: uid(),
+        url: imageUrl,
+        scanMode: "generic",
+      },
+    ],
+  })
+}
   const removeImage = (id: string) =>
     updateCurrent({ images: current.images.filter((i) => i.id !== id) })
 
