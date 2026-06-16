@@ -114,6 +114,7 @@ const handleUpload = (
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
         <div className="grid grid-cols-2 gap-2.5">
+          
           <Button variant="secondary" className="h-12" onClick={() => addImage("generic")}>
             <Camera className="size-5" />
             {t("takePhoto")}
