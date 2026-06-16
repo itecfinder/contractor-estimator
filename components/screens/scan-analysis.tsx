@@ -14,12 +14,9 @@ import {
 } from "lucide-react"
 import { useApp } from "@/lib/store"
 import { generateAnalysis, generateLineItems, uid } from "@/lib/mock"
-import type { ScanMode } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { ScreenHeader, StickyBar } from "./parts"
 import { cn } from "@/lib/utils"
-
-
 
 const severityCls: Record<string, string> = {
   low: "text-chart-2",
