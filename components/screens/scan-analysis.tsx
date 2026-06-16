@@ -128,7 +128,7 @@ export function ScanAnalysis() {
   onChange={handleCameraCapture}
   className="hidden"
 />   
-      <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
+      <ScreenHeader title={t("Project Photos")} step={{ current: 2, total: 4 }} back="capture" />
 
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
