@@ -27,9 +27,7 @@ export function ScanAnalysis() {
   const { t, current, updateCurrent, saveCurrent, go } = useApp()
 
   const [busy, setBusy] = useState(false)
-
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const cameraInputRef = useRef<HTMLInputElement>(null)
 
   if (!current) return null
 
