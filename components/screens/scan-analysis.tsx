@@ -129,13 +129,10 @@ const handleUpload = (
   onChange={handleUpload}
   className="hidden"
 />
- <input
-  ref={cameraInputRef}
+<input
   type="file"
   accept="image/*"
   capture="environment"
-  onChange={handleCameraCapture}
-  style={{ position: "absolute", left: "-9999px" }}
 />     
       <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
 
