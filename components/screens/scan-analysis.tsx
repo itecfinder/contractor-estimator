@@ -140,7 +140,7 @@ export function ScanAnalysis() {
     onClick={() => cameraInputRef.current?.click()}
   >
     <Camera className="size-5" />
-    Scan Area
+    Scan Project
   </Button>
 
   <Button
