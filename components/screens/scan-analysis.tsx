@@ -119,8 +119,8 @@ export function ScanAnalysis() {
 <input
   ref={cameraInputRef} type="file" accept="image/*" capture="environment" 
   onChange={handleCameraCapture} className="hidden"/>   
-      <ScreenHeader title="Project Photos" )} step={{ current: 2, total: 4 }} back="capture" />
-
+    <ScreenHeader title="Project Photos" step={{ current: 2, total: 4 }}
+  back="capture"/>  
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
         <div className="grid grid-cols-2 gap-2.5">
