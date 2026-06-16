@@ -210,9 +210,8 @@ Examples:
         {!current.analysis && (
           <Button
             onClick={analyze}
-            disabled={current.images.length === 0 || busy}
-            className="h-12 w-full text-base font-semibold"
-          >
+            disabled={ current.images.length === 0 || !(current as any).notes?.trim() ||busy}
+            className="h-12 w-full text-base font-semibold">
             {busy ? (
               <>
                 <Loader2 className="size-5 animate-spin" />
