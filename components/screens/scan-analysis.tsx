@@ -114,21 +114,12 @@ export function ScanAnalysis() {
   return (
     <div>
       <input
-  ref={fileInputRef}
-  type="file"
-  accept="image/*"
-  onChange={handleUpload}
-  className="hidden"
-/>
+  ref={fileInputRef} type="file" accept="image/*"
+  onChange={handleUpload} className="hidden"/>
 <input
-  ref={cameraInputRef}
-  type="file"
-  accept="image/*"
-  capture="environment"
-  onChange={handleCameraCapture}
-  className="hidden"
-/>   
-      <ScreenHeader   title="Project Photos" )} step={{ current: 2, total: 4 }} back="capture" />
+  ref={cameraInputRef} type="file" accept="image/*" capture="environment" 
+  onChange={handleCameraCapture} className="hidden"/>   
+      <ScreenHeader title="Project Photos" )} step={{ current: 2, total: 4 }} back="capture" />
 
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
@@ -179,33 +170,7 @@ export function ScanAnalysis() {
             </div>
           </div>
         )}
-<div className="space-y-2">
 
-  <label className="text-sm font-semibold text-foreground">
-    Project Notes
-  </label>
-
-  <textarea
-    value={(current as any).notes || ""}
-    onChange={(e) =>
-      updateCurrent({
-        notes: e.target.value,
-      } as any)
-    }
-    placeholder={`Describe the work needed...
-
-Examples:
-
-• Replace toilet and tub
-• Paint bathroom walls
-• Install vinyl flooring
-• Replace cabinets
-• Repair drywall
-• Customer wants mid-grade materials`}
-    className="min-h-[140px] w-full rounded-xl border border-border bg-card p-3 text-sm"
-  />
-
-</div>
         {/* Analyze */}
         {!current.analysis && (
           <Button
