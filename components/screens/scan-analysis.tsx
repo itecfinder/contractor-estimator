@@ -60,9 +60,10 @@ const handleUpload = (
       method: "POST",
     })
 
-    const analysis = await response.json()
-
+   const analysis = await response.json()
+  console.log("AI RESULT:", analysis)
     updateCurrent({ analysis })
+    
   } catch (error) {
     console.error("Analysis failed:", error)
   } finally {
