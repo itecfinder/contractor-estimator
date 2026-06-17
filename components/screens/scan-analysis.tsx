@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import {
   AlertTriangle,
   ArrowRight,
@@ -35,16 +35,29 @@ const severityCls: Record<string, string> = {
 export function ScanAnalysis() {
   const { t, current, updateCurrent, saveCurrent, go } = useApp()
   const [busy, setBusy] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
   if (!current) return null
 
-  const addImage = (scanMode: ScanMode) => {
-    updateCurrent({
-      images: [
-        ...current.images,
-        { id: uid(), url: scanImages[scanMode], scanMode },
-      ],
-    })
-  }
+  const handleUpload = (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0]
+
+  if (!file) return
+
+  updateCurrent({
+    images: [
+      ...current.images,
+      {
+        id: uid(),
+        url: URL.createObjectURL(file),
+        scanMode: "generic",
+      },
+    ],
+  })
+}
+  
 
   const removeImage = (id: string) =>
     updateCurrent({ images: current.images.filter((i) => i.id !== id) })
