@@ -79,27 +79,20 @@ const handleUpload = (
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
         <div className="grid grid-cols-2 gap-2.5">
-          <Button variant="secondary" className="h-12" onClick={() => addImage("generic")}>
-            <Camera className="size-5" />
-            {t("takePhoto")}
-          </Button>
+<Button
+  variant="secondary"
+  className="h-12"
+  onClick={() => fileInputRef.current?.click()}
+>
+  <Camera className="size-5" />
+  {t("takePhoto")}
+</Button>
+          
+          
          <Button variant="outline" className="h-12" onClick={() => fileInputRef.current?.click()}>
          <ImagePlus className="size-5" /> {t("uploadPhotos")}
         </Button>
         </div>
-        <div className="grid grid-cols-3 gap-2.5">
-          {captureButtons.map(({ mode, label, icon: Icon }) => (
-            <button
-              key={mode}
-              onClick={() => addImage(mode)}
-              className="flex flex-col items-center gap-1.5 rounded-xl border border-border bg-card py-3 text-xs font-medium text-foreground active:bg-accent"
-            >
-              <Icon className="size-5 text-primary" />
-              {label}
-            </button>
-          ))}
-        </div>
-
         {/* Photos */}
         {current.images.length > 0 && (
           <div>
