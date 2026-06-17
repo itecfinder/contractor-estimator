@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import {
   AlertTriangle,
   ArrowRight,
@@ -19,94 +19,65 @@ import { Button } from "@/components/ui/button"
 import { ScreenHeader, StickyBar } from "./parts"
 import { cn } from "@/lib/utils"
 
+const scanImages: Record<ScanMode, string> = {
+  roof: "/images/scan-roof.png",
+  walls: "/images/scan-walls.png",
+  floors: "/images/scan-floor.png",
+  generic: "/images/scan-walls.png",
+}
+
+const severityCls: Record<string, string> = {
+  low: "text-chart-2",
+  medium: "text-chart-5",
+  high: "text-destructive",
+}
+
 export function ScanAnalysis() {
   const { t, current, updateCurrent, saveCurrent, go } = useApp()
   const [busy, setBusy] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
   if (!current) return null
 
-  const handleUpload = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const files = Array.from(event.target.files || [])
-
-    if (!files.length) return
-
-    const uploadedImages = files.map((file) => ({
-      id: uid(),
-      url: URL.createObjectURL(file),
-      scanMode: "generic" as ScanMode,
-    }))
-
+  const addImage = (scanMode: ScanMode) => {
     updateCurrent({
-      images: [...current.images, ...uploadedImages],
+      images: [
+        ...current.images,
+        { id: uid(), url: scanImages[scanMode], scanMode },
+      ],
     })
   }
 
   const removeImage = (id: string) =>
-    updateCurrent({
-      images: current.images.filter((i) => i.id !== id),
-    })
+    updateCurrent({ images: current.images.filter((i) => i.id !== id) })
 
   const analyze = () => {
     if (!current.type) return
-
     setBusy(true)
-
     setTimeout(() => {
-      updateCurrent({
-        analysis: generateAnalysis(current.type),
-      })
-
+      updateCurrent({ analysis: generateAnalysis(current.type!) })
       setBusy(false)
     }, 1400)
   }
 
   const buildEstimate = () => {
     if (!current.type) return
-
     const items = current.lineItems.length
       ? current.lineItems
       : generateLineItems(current.type)
-
-    updateCurrent({
-      lineItems: items,
-      status: "estimated",
-    })
-
+    updateCurrent({ lineItems: items, status: "estimated" })
     saveCurrent()
     go("estimate")
   }
 
+  const captureButtons: { mode: ScanMode; label: string; icon: typeof Camera }[] = [
+    { mode: "roof", label: t("scanRoof"), icon: Ruler },
+    { mode: "walls", label: t("scanWalls"), icon: Ruler },
+    { mode: "floors", label: t("scanFloors"), icon: Ruler },
+  ]
+
   return (
     <div>
-      <ScreenHeader
-        title={t("scanProject")}
-        step={{ current: 2, total: 4 }}
-        back="capture"
-      />
+      <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleUpload}
-        className="hidden"
-      />
-
-      <div className="space-y-5 px-4 pt-4">
-
-        <Button
-          variant="outline"
-          className="h-12 w-full"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <ImagePlus className="size-5" />
-          {t("uploadPhotos")}
-        </Button>
-  </div>
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
         <div className="grid grid-cols-2 gap-2.5">
@@ -247,6 +218,7 @@ export function ScanAnalysis() {
     </div>
   )
 }
+
 function ResultCard({
   title,
   icon,
