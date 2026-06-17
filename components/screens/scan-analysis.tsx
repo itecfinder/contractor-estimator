@@ -97,9 +97,8 @@ const handleUpload = (
   {t("takePhoto")}
 </Button>
           
-          
-         <Button variant="outline" className="h-12" onClick={() => fileInputRef.current?.click()}>
-         <ImagePlus className="size-5" /> {t("uploadPhotos")}
+<Button variant="outline" className="h-12" onClick={() => fileInputRef.current?.click()}>
+   <ImagePlus className="size-5" /> {t("uploadPhotos")}
         </Button>
         </div>
         {/* Photos */}
@@ -189,7 +188,6 @@ const handleUpload = (
                 </li>
               ))}
             </ResultCard>
-
             <div className="rounded-xl border border-dashed border-primary/40 bg-accent/40 p-4">
               <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
                 <HelpCircle className="size-4 text-primary" />
@@ -203,37 +201,55 @@ const handleUpload = (
                 ))}
               </ul>
             </div>
+            
           </div>
-      <div className="rounded-xl border border-border bg-card p-4">
-  <p className="mb-3 text-sm font-semibold">
-    Additional Costs
-  </p>
+  <div className="rounded-xl border border-border bg-card p-4">
+      <p className="mb-3 text-sm font-semibold">
+        Additional Costs
+      </p>
 
-  <div className="space-y-3">
-    {extraCosts.map((cost, index) => (
-      <div key={index} className="grid grid-cols-2 gap-2">
-        <Input
-          placeholder="Description"
-          value={cost.description}
-          onChange={(e) => {
-            const updated = [...extraCosts]
-            updated[index].description = e.target.value
-            setExtraCosts(updated)
-          }}
-        />
+      <div className="space-y-3">
+        {extraCosts.map((cost, index) => (
+          <div key={index} className="grid grid-cols-2 gap-2">
+            <Input
+              placeholder="Description"
+              value={cost.description}
+              onChange={(e) => {
+                const updated = [...extraCosts]
+                updated[index].description = e.target.value
+                setExtraCosts(updated)
+              }}
+            />
 
-        <Input
-          type="number"
-          placeholder="$0"
-          value={cost.amount}
-          onChange={(e) => {
-            const updated = [...extraCosts]
-            updated[index].amount = e.target.value
-            setExtraCosts(updated)
-          }}
-        />
+            <Input
+              type="number"
+              placeholder="$0"
+              value={cost.amount}
+              onChange={(e) => {
+                const updated = [...extraCosts]
+                updated[index].amount = e.target.value
+                setExtraCosts(updated)
+              }}
+            />
+          </div>
+        ))}
+
+        <Button
+          variant="outline"
+          onClick={() =>
+            setExtraCosts([
+              ...extraCosts,
+              { description: "", amount: "" },
+            ])
+          }
+        >
+          + Add Cost
+        </Button>
       </div>
-    ))}
+    </div>
+
+  </div>
+)}
 
     <Button
       variant="outline"
