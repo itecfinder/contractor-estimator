@@ -107,18 +107,7 @@ export function ScanAnalysis() {
           {t("uploadPhotos")}
         </Button> 
         </div>
-        <div className="grid grid-cols-3 gap-2.5">
-          {captureButtons.map(({ mode, label, icon: Icon }) => (
-            <button
-              key={mode}
-              onClick={() => addImage(mode)}
-              className="flex flex-col items-center gap-1.5 rounded-xl border border-border bg-card py-3 text-xs font-medium text-foreground active:bg-accent"
-            >
-              <Icon className="size-5 text-primary" />
-              {label}
-            </button>
-          ))}
-        </div>
+        
 
         {/* Photos */}
         {current.images.length > 0 && (
