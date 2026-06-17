@@ -48,15 +48,7 @@ const handleUpload = (
     ],
   })
 }
-  const addImage = (scanMode: ScanMode) => {
-    updateCurrent({
-      images: [
-        ...current.images,
-        { id: uid(), url: scanImages[scanMode], scanMode },
-      ],
-    })
-  }
-
+  
   const removeImage = (id: string) =>
     updateCurrent({ images: current.images.filter((i) => i.id !== id) })
 
