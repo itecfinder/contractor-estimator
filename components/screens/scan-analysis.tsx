@@ -12,10 +12,14 @@ import {
   Sparkles,
   X,
 } from "lucide-react"
+
 import { useApp } from "@/lib/store"
 import { generateLineItems, uid } from "@/lib/mock"
 import type { ScanMode } from "@/lib/types"
+
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
 import { ScreenHeader, StickyBar } from "./parts"
 import { cn } from "@/lib/utils"
 
@@ -28,6 +32,9 @@ const severityCls: Record<string, string> = {
 export function ScanAnalysis() {
   const { t, current, updateCurrent, saveCurrent, go } = useApp()
   const [busy, setBusy] = useState(false)
+  const [extraCosts, setExtraCosts] = useState([
+  { description: "", amount: "" },
+])
   const fileInputRef = useRef<HTMLInputElement>(null)
   if (!current) return null
 const handleUpload = (
@@ -145,6 +152,7 @@ const handleUpload = (
 
         {/* Results */}
         {current.analysis && (
+      
           <div className="space-y-4">
             <ResultCard title={t("detectedSurfaces")} icon={<Ruler className="size-4 text-primary" />}>
               {current.analysis.surfaces.map((s, i) => (
@@ -196,6 +204,50 @@ const handleUpload = (
               </ul>
             </div>
           </div>
+      <div className="rounded-xl border border-border bg-card p-4">
+  <p className="mb-3 text-sm font-semibold">
+    Additional Costs
+  </p>
+
+  <div className="space-y-3">
+    {extraCosts.map((cost, index) => (
+      <div key={index} className="grid grid-cols-2 gap-2">
+        <Input
+          placeholder="Description"
+          value={cost.description}
+          onChange={(e) => {
+            const updated = [...extraCosts]
+            updated[index].description = e.target.value
+            setExtraCosts(updated)
+          }}
+        />
+
+        <Input
+          type="number"
+          placeholder="$0"
+          value={cost.amount}
+          onChange={(e) => {
+            const updated = [...extraCosts]
+            updated[index].amount = e.target.value
+            setExtraCosts(updated)
+          }}
+        />
+      </div>
+    ))}
+
+    <Button
+      variant="outline"
+      onClick={() =>
+        setExtraCosts([
+          ...extraCosts,
+          { description: "", amount: "" },
+        ])
+      }
+    >
+      + Add Cost
+    </Button>
+  </div>
+</div>
         )}
       </div>
 
