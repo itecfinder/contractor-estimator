@@ -19,13 +19,6 @@ import { Button } from "@/components/ui/button"
 import { ScreenHeader, StickyBar } from "./parts"
 import { cn } from "@/lib/utils"
 
-const scanImages: Record<ScanMode, string> = {
-  roof: "/images/scan-roof.png",
-  walls: "/images/scan-walls.png",
-  floors: "/images/scan-floor.png",
-  generic: "/images/scan-walls.png",
-}
-
 const severityCls: Record<string, string> = {
   low: "text-chart-2",
   medium: "text-chart-5",
