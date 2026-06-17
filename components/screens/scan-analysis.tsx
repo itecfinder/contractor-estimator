@@ -34,33 +34,35 @@ const handleUpload = (
   event: React.ChangeEvent<HTMLInputElement>
 ) => {
   const files = Array.from(event.target.files || [])
-
   if (!files.length) return
-
-  updateCurrent({
-    images: [
-      ...current.images,
-      ...files.map((file) => ({
-        id: uid(),
-        url: URL.createObjectURL(file),
-        scanMode: "generic" as ScanMode,
+  updateCurrent({ images: [ ...current.images, ...files.map((file) => ({ id: uid(), url: URL.createObjectURL(file),
+  scanMode: "generic" as ScanMode,
       })),
     ],
   })
-}
-  
+} 
   const removeImage = (id: string) =>
     updateCurrent({ images: current.images.filter((i) => i.id !== id) })
+  const analyze = async () => {
+  if (!current.type) return
 
-  const analyze = () => {
-    if (!current.type) return
-    setBusy(true)
-    setTimeout(() => {
-      updateCurrent({ analysis: generateAnalysis(current.type!) })
-      setBusy(false)
-    }, 1400)
+  setBusy(true)
+
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+    })
+
+    const analysis = await response.json()
+
+    updateCurrent({ analysis })
+  } catch (error) {
+    console.error("Analysis failed:", error)
+  } finally {
+    setBusy(false)
   }
-
+}
+ 
   const buildEstimate = () => {
     if (!current.type) return
     const items = current.lineItems.length
