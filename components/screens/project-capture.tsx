@@ -126,15 +126,18 @@ export function ProjectCapture() {
             </SelectContent>
           </Select>
         </Field>
-
-        <Field label={t("notes")}>
-          <Textarea
-            rows={4}
-            value={current.notes}
-            onChange={(e) => updateCurrent({ notes: e.target.value })}
-            placeholder={t("notesPlaceholder")}
-          />
-        </Field>
+       <Field label={t("notes")}>
+  <Textarea
+    rows={8}
+    maxLength={1000}
+    value={current.notes || ""}
+    onChange={(e) => updateCurrent({ notes: e.target.value })}
+    placeholder="Describe scope of work, demolition, materials, upgrades, special requests, disposal fees, permits, labor details, customer selections, etc."
+  />
+  <p className="text-xs text-muted-foreground text-right">
+    {(current.notes || "").length}/1000
+  </p>
+</Field>
       </div>
 
       <StickyBar>
