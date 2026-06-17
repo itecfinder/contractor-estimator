@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react"
 import { useApp } from "@/lib/store"
-import { generateAnalysis, generateLineItems, uid } from "@/lib/mock"
+import { generateLineItems, uid } from "@/lib/mock"
 import type { ScanMode } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { ScreenHeader, StickyBar } from "./parts"
