@@ -19,102 +19,93 @@ import { Button } from "@/components/ui/button"
 import { ScreenHeader, StickyBar } from "./parts"
 import { cn } from "@/lib/utils"
 
-const scanImages: Record<ScanMode, string> = {
-  roof: "/images/scan-roof.png",
-  walls: "/images/scan-walls.png",
-  floors: "/images/scan-floor.png",
-  generic: "/images/scan-walls.png",
-}
-
-const severityCls: Record<string, string> = {
-  low: "text-chart-2",
-  medium: "text-chart-5",
-  high: "text-destructive",
-}
-
 export function ScanAnalysis() {
   const { t, current, updateCurrent, saveCurrent, go } = useApp()
   const [busy, setBusy] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const cameraInputRef = useRef<HTMLInputElement>(null)
+
   if (!current) return null
+
   const handleUpload = (
-  event: React.ChangeEvent<HTMLInputElement>
-) => {
-  const file = event.target.files?.[0]
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(event.target.files || [])
 
-  if (!file) return
+    if (!files.length) return
 
-  updateCurrent({
-    images: [
-      ...current.images,
-      {
-        id: uid(),
-        url: URL.createObjectURL(file),
-        scanMode: "generic",
-      },
-    ],
-  })
-}
+    const uploadedImages = files.map((file) => ({
+      id: uid(),
+      url: URL.createObjectURL(file),
+      scanMode: "generic" as ScanMode,
+    }))
 
-const removeImage = (id: string) =>
-  updateCurrent({
-    images: current.images.filter((i) => i.id !== id),
-  })
-
-const analyze = () => {
-  if (!current.type) return
-
-  setBusy(true)
-
-  setTimeout(() => {
     updateCurrent({
-      analysis: generateAnalysis(current.type!),
+      images: [...current.images, ...uploadedImages],
+    })
+  }
+
+  const removeImage = (id: string) =>
+    updateCurrent({
+      images: current.images.filter((i) => i.id !== id),
     })
 
-    setBusy(false)
-  }, 1400)
-}
+  const analyze = () => {
+    if (!current.type) return
 
-const buildEstimate = () => {
-  if (!current.type) return
+    setBusy(true)
 
-  const items = current.lineItems.length
-    ? current.lineItems
-    : generateLineItems(current.type)
+    setTimeout(() => {
+      updateCurrent({
+        analysis: generateAnalysis(current.type),
+      })
 
-  updateCurrent({
-    lineItems: items,
-    status: "estimated",
-  })
+      setBusy(false)
+    }, 1400)
+  }
 
-  saveCurrent()
-  go("estimate")
-}
+  const buildEstimate = () => {
+    if (!current.type) return
 
-return (
-  
+    const items = current.lineItems.length
+      ? current.lineItems
+      : generateLineItems(current.type)
+
+    updateCurrent({
+      lineItems: items,
+      status: "estimated",
+    })
+
+    saveCurrent()
+    go("estimate")
+  }
+
+  return (
     <div>
-      <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
-<div className="space-y-5 px-4 pt-4">
+      <ScreenHeader
+        title={t("scanProject")}
+        step={{ current: 2, total: 4 }}
+        back="capture"
+      />
 
-  <input
-    ref={fileInputRef}
-    type="file"
-    accept="image/*"
-    onChange={handleUpload}
-    className="hidden"
-  />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleUpload}
+        className="hidden"
+      />
 
-  <div className="flex justify-center">
-    <Button
-      variant="outline"
-      className="h-12 w-full"
-      onClick={() => fileInputRef.current?.click()}
-    >
-      <ImagePlus className="size-5" />
-      Upload Project Photos
-    </Button>
+      <div className="space-y-5 px-4 pt-4">
+
+        <Button
+          variant="outline"
+          className="h-12 w-full"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <ImagePlus className="size-5" />
+          {t("uploadPhotos")}
+        </Button>
   </div>
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
@@ -256,7 +247,6 @@ return (
     </div>
   )
 }
-
 function ResultCard({
   title,
   icon,
