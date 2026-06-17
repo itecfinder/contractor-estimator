@@ -7,19 +7,32 @@ export async function POST() {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    const response = await openai.responses.create({
+    await openai.responses.create({
       model: "gpt-4.1-mini",
       input: "Say ContractPro AI is connected successfully.",
     });
 
     return NextResponse.json({
-      success: true,
-      result: response.output_text,
+      surfaces: [
+        {
+          label: "Test Surface",
+          area: 100,
+          unit: "sq ft",
+          confidence: 0.95,
+        },
+      ],
+      damage: [
+        {
+          label: "Minor damage",
+          severity: "low",
+        },
+      ],
+      scope: ["Demo", "Paint"],
+      followUps: ["Any water damage?"],
     });
   } catch (error: any) {
     return NextResponse.json(
       {
-        success: false,
         error: error.message,
       },
       { status: 500 }
