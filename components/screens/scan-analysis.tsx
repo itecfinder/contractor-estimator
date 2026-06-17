@@ -148,62 +148,86 @@ const handleUpload = (
             )}
           </Button>
         )}
+{/* Results */}
+{current.analysis && (
+  <div className="space-y-4">
 
-        {/* Results */}
-        {current.analysis && (
-      
-          <div className="space-y-4">
-            <ResultCard title={t("detectedSurfaces")} icon={<Ruler className="size-4 text-primary" />}>
-              {current.analysis.surfaces.map((s, i) => (
-                <li key={i} className="flex items-center justify-between py-1.5 text-sm">
-                  <span className="text-foreground">{s.label}</span>
-                  <span className="flex items-center gap-2">
-                    <span className="font-semibold text-foreground">
-                      {s.area} {s.unit}
-                    </span>
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                      {Math.round(s.confidence * 100)}% {t("confidence")}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ResultCard>
+    <ResultCard
+      title={t("detectedSurfaces")}
+      icon={<Ruler className="size-4 text-primary" />}
+    >
+      {current.analysis.surfaces.map((s, i) => (
+        <li
+          key={i}
+          className="flex items-center justify-between py-1.5 text-sm"
+        >
+          <span>{s.label}</span>
+          <span className="flex items-center gap-2">
+            <span className="font-semibold">
+              {s.area} {s.unit}
+            </span>
+            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px]">
+              {Math.round(s.confidence * 100)}% {t("confidence")}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ResultCard>
 
-            <ResultCard title={t("damageFindings")} icon={<AlertTriangle className="size-4 text-chart-5" />}>
-              {current.analysis.damage.map((d, i) => (
-                <li key={i} className="flex items-center justify-between py-1.5 text-sm">
-                  <span className="text-foreground">{d.label}</span>
-                  <span className={cn("text-xs font-semibold uppercase", severityCls[d.severity])}>
-                    {d.severity}
-                  </span>
-                </li>
-              ))}
-            </ResultCard>
+    <ResultCard
+      title={t("damageFindings")}
+      icon={<AlertTriangle className="size-4 text-chart-5" />}
+    >
+      {current.analysis.damage.map((d, i) => (
+        <li
+          key={i}
+          className="flex items-center justify-between py-1.5 text-sm"
+        >
+          <span>{d.label}</span>
+          <span
+            className={cn(
+              "text-xs font-semibold uppercase",
+              severityCls[d.severity]
+            )}
+          >
+            {d.severity}
+          </span>
+        </li>
+      ))}
+    </ResultCard>
 
-            <ResultCard title={t("scopeItems")} icon={<Sparkles className="size-4 text-primary" />}>
-              {current.analysis.scope.map((s, i) => (
-                <li key={i} className="flex items-center gap-2 py-1 text-sm text-foreground">
-                  <span className="size-1.5 rounded-full bg-primary" />
-                  {s}
-                </li>
-              ))}
-            </ResultCard>
-            <div className="rounded-xl border border-dashed border-primary/40 bg-accent/40 p-4">
-              <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
-                <HelpCircle className="size-4 text-primary" />
-                {t("followUps")}
-              </p>
-              <ul className="space-y-1.5">
-                {current.analysis.followUps.map((q, i) => (
-                  <li key={i} className="text-sm text-muted-foreground">
-                    {q}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-          </div>
-  <div className="rounded-xl border border-border bg-card p-4">
+    <ResultCard
+      title={t("scopeItems")}
+      icon={<Sparkles className="size-4 text-primary" />}
+    >
+      {current.analysis.scope.map((s, i) => (
+        <li
+          key={i}
+          className="flex items-center gap-2 py-1 text-sm"
+        >
+          <span className="size-1.5 rounded-full bg-primary" />
+          {s}
+        </li>
+      ))}
+    </ResultCard>
+
+    <div className="rounded-xl border border-dashed border-primary/40 bg-accent/40 p-4">
+      <p className="mb-2 flex items-center gap-2 text-sm font-semibold">
+        <HelpCircle className="size-4 text-primary" />
+        {t("followUps")}
+      </p>
+
+      <ul className="space-y-1.5">
+        {current.analysis.followUps.map((q, i) => (
+          <li key={i} className="text-sm text-muted-foreground">
+            {q}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {/* Additional Costs */}
+    <div className="rounded-xl border border-border bg-card p-4">
       <p className="mb-3 text-sm font-semibold">
         Additional Costs
       </p>
@@ -250,7 +274,6 @@ const handleUpload = (
 
   </div>
 )}
-
     <Button
       variant="outline"
       onClick={() =>
