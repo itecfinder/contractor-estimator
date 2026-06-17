@@ -38,7 +38,6 @@ export function ScanAnalysis() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
   if (!current) return null
-
   const handleUpload = (
   event: React.ChangeEvent<HTMLInputElement>
 ) => {
@@ -57,37 +56,44 @@ export function ScanAnalysis() {
     ],
   })
 }
+
+const removeImage = (id: string) =>
+  updateCurrent({
+    images: current.images.filter((i) => i.id !== id),
+  })
+
+const analyze = () => {
+  if (!current.type) return
+
+  setBusy(true)
+
+  setTimeout(() => {
+    updateCurrent({
+      analysis: generateAnalysis(current.type!),
+    })
+
+    setBusy(false)
+  }, 1400)
+}
+
+const buildEstimate = () => {
+  if (!current.type) return
+
+  const items = current.lineItems.length
+    ? current.lineItems
+    : generateLineItems(current.type)
+
+  updateCurrent({
+    lineItems: items,
+    status: "estimated",
+  })
+
+  saveCurrent()
+  go("estimate")
+}
+
+return (
   
-
-  const removeImage = (id: string) =>
-    updateCurrent({ images: current.images.filter((i) => i.id !== id) })
-
-  const analyze = () => {
-    if (!current.type) return
-    setBusy(true)
-    setTimeout(() => {
-      updateCurrent({ analysis: generateAnalysis(current.type!) })
-      setBusy(false)
-    }, 1400)
-  }
-
-  const buildEstimate = () => {
-    if (!current.type) return
-    const items = current.lineItems.length
-      ? current.lineItems
-      : generateLineItems(current.type)
-    updateCurrent({ lineItems: items, status: "estimated" })
-    saveCurrent()
-    go("estimate")
-  }
-
-  const captureButtons: { mode: ScanMode; label: string; icon: typeof Camera }[] = [
-    { mode: "roof", label: t("scanRoof"), icon: Ruler },
-    { mode: "walls", label: t("scanWalls"), icon: Ruler },
-    { mode: "floors", label: t("scanFloors"), icon: Ruler },
-  ]
-
-  return (
     <div>
       <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
 
