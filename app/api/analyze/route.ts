@@ -3,39 +3,36 @@ import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
+    console.log("API route started");
+
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
 
+    console.log("Key exists:", !!process.env.OPENAI_API_KEY);
+
     await openai.responses.create({
       model: "gpt-4.1-mini",
-      input: "Say ContractPro AI is connected successfully.",
+      input: "test",
     });
 
+    console.log("OpenAI call succeeded");
+
     return NextResponse.json({
-      surfaces: [
-        {
-          label: "Test Surface",
-          area: 100,
-          unit: "sq ft",
-          confidence: 0.95,
-        },
-      ],
-      damage: [
-        {
-          label: "Minor damage",
-          severity: "low",
-        },
-      ],
-      scope: ["Demo", "Paint"],
-      followUps: ["Any water damage?"],
+      surfaces: [],
+      damage: [],
+      scope: [],
+      followUps: [],
     });
   } catch (error: any) {
+    console.error("FULL ERROR:", error);
+
     return NextResponse.json(
       {
-        error: error.message,
+        error: error?.message || "unknown error",
       },
       { status: 500 }
     );
   }
 }
+
