@@ -82,9 +82,22 @@ const handleUpload = (
   }
  
   return (
-   <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
-  <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleUpload}className="hidden"  />
-      <div className="space-y-5 px-4 pt-4">
+<>
+<ScreenHeader
+title={t("scanProject")}
+step={{ current: 2, total: 4 }}
+back="capture"
+/>
+
+<input
+  ref={fileInputRef}
+  type="file"
+  accept="image/*"
+  multiple
+  onChange={handleUpload}
+  className="hidden"/>
+<div className="space-y-5 px-4 pt-4">
+
         {/* Capture actions */}
         <div className="grid grid-cols-2 gap-2.5">
 <Button
