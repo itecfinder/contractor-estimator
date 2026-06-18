@@ -13,34 +13,29 @@ export async function POST() {
     });
 
     return NextResponse.json({
-      surfaces: [
-        {
-          label: response.output_text || "OK",
-          area: 1,
-          unit: "sq ft",
-          confidence: 1,
-        },
-      ],
-      damage: [],
-      scope: [],
-      followUps: [],
+      success: true,
+      output: response.output_text,
     });
   } catch (error: any) {
-    console.error("ANALYZE ERROR:", error);
+    console.error("OPENAI ERROR:", error);
 
-    return NextResponse.json({
-      surfaces: [
-        {
-          label: error?.message || "Unknown error",
-          area: 0,
-          unit: "",
-          confidence: 0,
+    return NextResponse.json(
+      {
+        success: false,
+        message: error?.message,
+        status: error?.status,
+        code: error?.code,
+        type: error?.type,
+        raw: {
+          name: error?.name,
+          message: error?.message,
+          status: error?.status,
+          code: error?.code,
+          type: error?.type,
         },
-      ],
-      damage: [],
-      scope: [],
-      followUps: [],
-    });
+      },
+      { status: 500 }
+    );
   }
 }
 
