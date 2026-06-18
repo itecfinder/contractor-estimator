@@ -18,7 +18,8 @@ import { computeTotals, useApp } from "@/lib/store"
 import type { ProjectTypeKey } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "./status-badge"
-
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
 const typeIcons: Record<ProjectTypeKey, LucideIcon> = {
   kitchenBath: CookingPot,
   homeRemodel: House,
@@ -45,7 +46,9 @@ const order: ProjectTypeKey[] = [
 
 export function Dashboard() {
   const { t, lang, startProject, projects, openProject, money } = useApp()
-
+const [businessName, setBusinessName] = useState("")
+const [phone, setPhone] = useState("")
+const [email, setEmail] = useState("")
   return (
     <div className="space-y-6 px-4 pt-5">
       {/* Hero */}
@@ -54,8 +57,38 @@ export function Dashboard() {
         <h1 className="mt-1 text-2xl font-bold leading-tight text-balance font-[family-name:var(--font-heading)]">
           {t("tagline")}
         </h1>
+<Input
+  placeholder="Business Name"
+  value={businessName}
+  onChange={(e) => setBusinessName(e.target.value)}
+  className="mt-4"
+/>
+
+<Input
+  placeholder="Phone Number"
+  value={phone}
+  onChange={(e) => setPhone(e.target.value)}
+  className="mt-2"
+/>
+
+<Input
+  placeholder="Email Address"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  className="mt-2"
+/>
         <Button
-          onClick={() => startProject(null)}
+  onClick={async () => {
+    if (!businessName || !phone || !email) {
+      alert("Please complete all fields")
+      return
+    }
+
+    // Later this will call:
+    // POST /api/check-access
+
+    startProject(null)
+  }}
           className="mt-4 h-12 w-full text-base font-semibold"
         >
           <Plus className="size-5" />
