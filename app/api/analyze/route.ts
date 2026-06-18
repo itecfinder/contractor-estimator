@@ -9,13 +9,13 @@ export async function POST() {
   try {
     const response = await openai.responses.create({
       model: "gpt-4.1-mini",
-      input: "Analyze this contractor estimate request.",
+      input: "Say OK",
     });
 
     return NextResponse.json({
       surfaces: [
         {
-          label: response.output_text ?? "Success",
+          label: response.output_text || "OK",
           area: 1,
           unit: "sq ft",
           confidence: 1,
@@ -26,14 +26,21 @@ export async function POST() {
       followUps: [],
     });
   } catch (error: any) {
-    console.error(error);
+    console.error("ANALYZE ERROR:", error);
 
-    return NextResponse.json(
-      {
-        error: error?.message ?? "Unknown error",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      surfaces: [
+        {
+          label: error?.message || "Unknown error",
+          area: 0,
+          unit: "",
+          confidence: 0,
+        },
+      ],
+      damage: [],
+      scope: [],
+      followUps: [],
+    });
   }
 }
 
