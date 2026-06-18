@@ -61,21 +61,21 @@ const [email, setEmail] = useState("")
   placeholder="Business Name"
   value={businessName}
   onChange={(e) => setBusinessName(e.target.value)}
-  className="mt-4"
+  className="mt-4 border-white/30 bg-transparent text-white placeholder:text-white/60"
 />
 
 <Input
   placeholder="Phone Number"
   value={phone}
   onChange={(e) => setPhone(e.target.value)}
-  className="mt-2"
+ className="mt-2 border-white/30 bg-transparent text-white placeholder:text-white/60"
 />
 
 <Input
   placeholder="Email Address"
   value={email}
   onChange={(e) => setEmail(e.target.value)}
-  className="mt-2"
+  className="mt-2 border-white/30 bg-transparent text-white placeholder:text-white/60"
 />
         <Button
   onClick={async () => {
@@ -107,7 +107,13 @@ const [email, setEmail] = useState("")
             return (
               <button
                 key={key}
-                onClick={() => startProject(key)}
+                onClick={() => {
+  if (!businessName || !phone || !email) {
+    alert("Please complete all fields")
+    return
+  }
+  startProject(key)
+}}
                 className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-2 text-center transition-colors active:bg-accent"
               >
                 <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
