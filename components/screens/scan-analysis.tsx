@@ -81,10 +81,12 @@ const handleUpload = (
     go("estimate")
   }
  
-
   return (
     <div>
       <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
+      <div className="bg-red-500 text-white p-2">
+  SCAN ANALYSIS TEST
+</div>
   <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleUpload}className="hidden"  />
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
