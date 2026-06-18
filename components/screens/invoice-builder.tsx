@@ -192,24 +192,19 @@ export function InvoiceBuilder() {
   className="mt-6 block"
 >
   <div className="rounded-xl border border-border bg-card p-5 transition hover:bg-accent cursor-pointer">
+
     <h3 className="text-lg font-semibold">
-       Get More Jobs
+      Free Estimate Complete
     </h3>
 
     <p className="mt-2 text-sm text-muted-foreground">
-      Create a Business Account and promote your services in the contractor directory.
+      Get unlimited estimates and more business opportunities with a Trusted Expert membership.
     </p>
-
-    <div className="mt-3 space-y-1 text-sm">
-      <div>✓ Unlimited AI Estimates</div>
-      <div>✓ Business Directory Listing</div>
-      <div>✓ Save Project History</div>
-      <div>✓ Future Invoice Tools</div>
-    </div>
 
     <p className="mt-4 font-medium text-primary">
-      Create Business Account →
+      Learn More →
     </p>
+
   </div>
 </a>
       </div>
