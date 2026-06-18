@@ -82,14 +82,7 @@ const handleUpload = (
   }
  
   return (
-    <div>
-      <h1 style={{ color: "red", fontSize: "40px" }}>
-  TEST 999
-</h1>
-      <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
-      <div className="bg-red-500 text-white p-2">
-  SCAN ANALYSIS TEST
-</div>
+   <ScreenHeader title={t("scanProject")} step={{ current: 2, total: 4 }} back="capture" />
   <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleUpload}className="hidden"  />
       <div className="space-y-5 px-4 pt-4">
         {/* Capture actions */}
