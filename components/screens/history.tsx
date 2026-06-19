@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { StatusBadge } from "./status-badge"
 
 export function History() {
-  const { t, lang, projects, openProject, money,go } = useApp()
+ const { t, lang, projects, openProject, money, go } = useApp()
 
   return (
     <div className="px-4 pt-5">
