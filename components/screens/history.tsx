@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { StatusBadge } from "./status-badge"
 
 export function History() {
-  const { t, lang, projects, openProject, startProject, money } = useApp()
+  const { t, lang, projects, openProject, money } = useApp()
 
   return (
     <div className="px-4 pt-5">
@@ -16,10 +16,12 @@ export function History() {
           {t("history")}
         </h1>
    <Button
-  onClick={() => createProject()}
-  className="mt-4 h-12 w-full text-base font-semibold"
+  size="sm"
+  onClick={() => go("dashboard")}
+  className="h-9"
 >
-  Start Estimate
+  <Plus className="size-4" />
+  {t("newProject")}
 </Button>
       </div>
       {projects.length === 0 ? (
