@@ -132,15 +132,10 @@ export function Dashboard() {
           {order.map((key) => {
             const Icon = typeIcons[key]
             return (
-              <button
-                key={key}
-                onClick={() => {
-  if (!businessName || !phone || !email) {
-    alert("Please complete all fields")
-    return
-  }
-  startProject(key)
-}}
+              
+          <button
+  key={key}
+  onClick={() => createProject(key)}
                 className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-2 text-center transition-colors active:bg-accent"
               >
                 <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
