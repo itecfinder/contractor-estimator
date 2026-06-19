@@ -13,13 +13,15 @@ import {
   Triangle,
   type LucideIcon,
 } from "lucide-react"
+import { useState } from "react"
+
 import { projectTypeLabels } from "@/lib/i18n"
 import { computeTotals, useApp } from "@/lib/store"
 import type { ProjectTypeKey } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { StatusBadge } from "./status-badge"
-import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { StatusBadge } from "./status-badge"
+
 const typeIcons: Record<ProjectTypeKey, LucideIcon> = {
   kitchenBath: CookingPot,
   homeRemodel: House,
@@ -31,6 +33,7 @@ const typeIcons: Record<ProjectTypeKey, LucideIcon> = {
   driveway: CarFront,
   roofing: Triangle,
 }
+
 const order: ProjectTypeKey[] = [
   "kitchenBath",
   "homeRemodel",
@@ -42,41 +45,71 @@ const order: ProjectTypeKey[] = [
   "driveway",
   "roofing",
 ]
+
+type VerificationResult = {
+  allowed: boolean
+  access?: "lead" | "free" | "paid"
+  remainingPasses?: number
+  message?: string
+}
+
 export function Dashboard() {
   const { t, lang, startProject, projects, openProject, money } = useApp()
 
   const [businessName, setBusinessName] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const createProject = async (
-    projectType?: ProjectTypeKey
-  ) => {
+  const getPassKey = (access: "lead" | "free") => {
+    return `single_pass_used_${access}_${phone || email}`
+  }
+
+  const createProject = async (projectType?: ProjectTypeKey) => {
     if (!businessName || !phone || !email) {
       alert("Please complete all fields")
       return
     }
 
-    try {
-      const response = await fetch(
-  "/api/verify-membership",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      businessName,
-      phone,
-      email,
-    }),
-  }
-)
+    setLoading(true)
 
-      const result = await response.json()
+    try {
+      const response = await fetch("/api/verify-membership", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          businessName,
+          phone,
+          email,
+        }),
+      })
+
+      const result: VerificationResult = await response.json()
 
       if (!result.allowed) {
-        alert(result.message)
+        alert(result.message || "Access denied")
+        return
+      }
+
+      if (result.access === "paid") {
+        startProject(projectType ?? null)
+        return
+      }
+
+      if (result.access === "lead" || result.access === "free") {
+        const passKey = getPassKey(result.access)
+
+        const passUsed = localStorage.getItem(passKey) === "true"
+
+        if (passUsed) {
+          alert("Your free pass has already been used. Please upgrade to continue.")
+          return
+        }
+
+        localStorage.setItem(passKey, "true")
+        startProject(projectType ?? null)
         return
       }
 
@@ -84,59 +117,65 @@ export function Dashboard() {
     } catch (error) {
       console.error(error)
       alert("Unable to verify account")
+    } finally {
+      setLoading(false)
     }
   }
-  
+
   return (
     <div className="space-y-6 px-4 pt-5">
-      {/* Hero */}
       <div className="rounded-2xl bg-secondary p-5 text-secondary-foreground">
         <p className="text-sm font-medium text-primary">{t("appName")}</p>
         <h1 className="mt-1 text-2xl font-bold leading-tight text-balance font-[family-name:var(--font-heading)]">
           {t("tagline")}
         </h1>
-<Input
-  placeholder="Business Name"
-  value={businessName}
-  onChange={(e) => setBusinessName(e.target.value)}
-  className="mt-4 border-white/30 bg-transparent text-white placeholder:text-white/60"
-/>
 
-<Input
-  placeholder="Phone Number"
-  value={phone}
-  onChange={(e) => setPhone(e.target.value)}
- className="mt-2 border-white/30 bg-transparent text-white placeholder:text-white/60"
-/>
+        <Input
+          placeholder="Business Name"
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
+          className="mt-4 border-white/30 bg-transparent text-white placeholder:text-white/60"
+        />
 
-<Input
-  placeholder="Email Address"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  className="mt-2 border-white/30 bg-transparent text-white placeholder:text-white/60"
-/>
-<Button
-  onClick={() => createProject()}
-  className="mt-4 h-12 w-full text-base font-semibold"
->
-  <Plus className="size-5" />
-  {t("newProject")}
-</Button>
-</div>
-      {/* Quick start */}
+        <Input
+          placeholder="Phone Number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="mt-2 border-white/30 bg-transparent text-white placeholder:text-white/60"
+        />
+
+        <Input
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="mt-2 border-white/30 bg-transparent text-white placeholder:text-white/60"
+        />
+
+        <Button
+          onClick={() => createProject()}
+          disabled={loading}
+          className="mt-4 h-12 w-full text-base font-semibold"
+        >
+          <Plus className="size-5" />
+          {loading ? "Verifying..." : t("newProject")}
+        </Button>
+      </div>
+
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           {t("quickStart")}
         </h2>
+
         <div className="grid grid-cols-3 gap-2.5">
           {order.map((key) => {
             const Icon = typeIcons[key]
+
             return (
-              
-          <button
-  key={key}
-  onClick={() => createProject(key)}
-                className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-2 text-center transition-colors active:bg-accent"
+              <button
+                key={key}
+                onClick={() => createProject(key)}
+                disabled={loading}
+                className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-2 text-center transition-colors active:bg-accent disabled:opacity-60"
               >
                 <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
                   <Icon className="size-5" />
@@ -150,11 +189,11 @@ export function Dashboard() {
         </div>
       </section>
 
-      {/* Recent */}
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           {t("recentProjects")}
         </h2>
+
         {projects.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border bg-card px-4 py-6 text-center text-sm text-muted-foreground">
             {t("noProjects")}
@@ -163,6 +202,7 @@ export function Dashboard() {
           <ul className="space-y-2">
             {projects.slice(0, 4).map((p) => {
               const total = computeTotals(p.lineItems, p.estimate).total
+
               return (
                 <li key={p.id}>
                   <button
@@ -177,8 +217,11 @@ export function Dashboard() {
                         {p.type ? projectTypeLabels[p.type][lang] : "—"}
                       </p>
                     </div>
+
                     <div className="ml-3 flex shrink-0 flex-col items-end gap-1">
-                      <span className="font-semibold text-foreground">{money(total)}</span>
+                      <span className="font-semibold text-foreground">
+                        {money(total)}
+                      </span>
                       <StatusBadge status={p.status} />
                     </div>
                   </button>
@@ -191,4 +234,3 @@ export function Dashboard() {
     </div>
   )
 }
-
