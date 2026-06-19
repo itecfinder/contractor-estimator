@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(req: NextRequest) {
-  console.log("VERIFY MEMBER ROUTE HIT")
+const FREE_PLAN_IDS = ["1"] // free estimate plan IDs
+const PAID_PLAN_IDS = ["2", "3"] // unlimited access plan IDs
 
+export async function POST(req: NextRequest) {
   try {
     const { businessName, phone, email } = await req.json()
 
@@ -32,10 +33,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(searchPayload),
     })
 
-    console.log("BD STATUS:", bdResponse.status)
-
     const text = await bdResponse.text()
-    console.log("BD RAW RESPONSE:", text)
 
     if (!bdResponse.ok) {
       throw new Error(`BD Error ${bdResponse.status}: ${text}`)
@@ -48,11 +46,22 @@ export async function POST(req: NextRequest) {
       : bdData?.message || bdData?.user || bdData
 
     if (bdUser?.user_id || bdUser?.id) {
-      const subscriptionId = bdUser.subscription_id || bdUser.subscriptionId
+      const subscriptionId = String(bdUser.subscription_id || bdUser.subscriptionId || "")
+
+      let access: "free" | "paid" = "free"
+      if (PAID_PLAN_IDS.includes(subscriptionId)) access = "paid"
+      if (FREE_PLAN_IDS.includes(subscriptionId)) access = "free"
+
+      const isPaid = access === "paid"
 
       return NextResponse.json({
         allowed: true,
-        access: subscriptionId ? "paid" : "free",
+        canContinue: true,
+        access,
+        remainingPasses: isPaid ? null : 1,
+        upgradeMessage: isPaid
+          ? null
+          : "Your free access has already been used. Please upgrade to continue.",
         memberId: bdUser.user_id || bdUser.id,
         name: `${bdUser.first_name || ""} ${bdUser.last_name || ""}`.trim(),
         email: bdUser.email || "",
@@ -61,16 +70,12 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    console.log("NEW LEAD", {
-      businessName,
-      phone,
-      email,
-      source: "contractpro",
-    })
-
     return NextResponse.json({
       allowed: true,
+      canContinue: true,
       access: "lead",
+      remainingPasses: 1,
+      upgradeMessage: "Your free estimate pass is available.",
     })
   } catch (error) {
     console.error(error)
@@ -78,6 +83,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         allowed: false,
+        canContinue: false,
         message: "Unable to verify account",
       },
       { status: 500 }
