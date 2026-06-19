@@ -16,12 +16,12 @@ export function History() {
           {t("history")}
         </h1>
         <Button
+   <Button
   onClick={() => go("dashboard")}
 >
   + New Project
 </Button>
-      </div>
-
+      
       {projects.length === 0 ? (
         <div className="mt-10 flex flex-col items-center gap-3 text-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
