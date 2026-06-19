@@ -58,8 +58,7 @@ export function Dashboard() {
     }
 
     try {
-      const response = await fetch(
-        "/api/check-access",
+      const response = await fetch("/api/verify-membership")",
         {
           method: "POST",
           headers: {
