@@ -122,7 +122,7 @@ export function Dashboard() {
   <Plus className="size-5" />
   {t("newProject")}
 </Button>
-
+</div>
       {/* Quick start */}
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
