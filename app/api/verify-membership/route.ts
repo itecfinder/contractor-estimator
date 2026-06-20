@@ -71,14 +71,13 @@ export async function POST(req: NextRequest) {
       "BD USER:",
       JSON.stringify(user, null, 2)
     )
-
-    // No member found = lead
-    if (!user || (!user.id && !user.user_id)) {
-      return NextResponse.json({
-        allowed: true,
-        access: "lead",
-      })
-    }
+// No user found in BD
+if (Number(data?.total || 0) === 0) {
+  return NextResponse.json({
+    allowed: false,
+    message: "Create a business account",
+  })
+}   
 const planId = String(
   user.subscription_id ||
   user.membership_plan_id ||
