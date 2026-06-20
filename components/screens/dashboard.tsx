@@ -70,28 +70,27 @@ export function Dashboard() {
 }),
   }
 )
-    const result = await response.json()
+const result = await response.json()
+
 if (!result.allowed) {
-  alert(result.message)
+  alert(result.message || "Create a business account")
   return
 }
 
-// Paid members = unlimited
+// PAID = unlimited
 if (result.access === "paid") {
   startProject(projectType ?? null)
   return
 }
 
-// Free members = one estimate
+// FREE = 1 estimate
 if (result.access === "free") {
   const used = localStorage.getItem(
     `free_estimate_${email}`
   )
 
   if (used) {
-    alert(
-      `Your ${result.subscriptionName || "Free"} plan has already used its free estimate. Please upgrade.`
-    )
+    alert("Create a business account")
     return
   }
 
@@ -104,16 +103,14 @@ if (result.access === "free") {
   return
 }
 
-// Lead = one estimate
+// LEAD = 1 estimate
 if (result.access === "lead") {
   const used = localStorage.getItem(
     `lead_estimate_${email}`
   )
 
   if (used) {
-    alert(
-      "Your free estimate has already been used. Join ITECFinder to continue."
-    )
+    alert("Create a business account")
     return
   }
 
@@ -125,6 +122,7 @@ if (result.access === "lead") {
   startProject(projectType ?? null)
   return
 }
+
     } catch (error) {
       console.error(error)
       alert("Unable to verify account")
