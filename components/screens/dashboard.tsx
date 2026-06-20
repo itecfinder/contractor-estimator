@@ -70,15 +70,61 @@ export function Dashboard() {
 }),
   }
 )
+    const result = await response.json()
+if (!result.allowed) {
+  alert(result.message)
+  return
+}
 
-      const result = await response.json()
+// Paid members = unlimited
+if (result.access === "paid") {
+  startProject(projectType ?? null)
+  return
+}
 
-      if (!result.allowed) {
-        alert(result.message)
-        return
-      }
+// Free members = one estimate
+if (result.access === "free") {
+  const used = localStorage.getItem(
+    `free_estimate_${email}`
+  )
 
-      startProject(projectType ?? null)
+  if (used) {
+    alert(
+      `Your ${result.subscriptionName || "Free"} plan has already used its free estimate. Please upgrade.`
+    )
+    return
+  }
+
+  localStorage.setItem(
+    `free_estimate_${email}`,
+    "true"
+  )
+
+  startProject(projectType ?? null)
+  return
+}
+
+// Lead = one estimate
+if (result.access === "lead") {
+  const used = localStorage.getItem(
+    `lead_estimate_${email}`
+  )
+
+  if (used) {
+    alert(
+      "Your free estimate has already been used. Join ITECFinder to continue."
+    )
+    return
+  }
+
+  localStorage.setItem(
+    `lead_estimate_${email}`,
+    "true"
+  )
+
+  startProject(projectType ?? null)
+  return
+}
     } catch (error) {
       console.error(error)
       alert("Unable to verify account")
