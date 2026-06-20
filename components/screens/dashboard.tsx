@@ -47,69 +47,102 @@ export function Dashboard() {
 
   const [identifier, setIdentifier] = useState("")
   const createProject = async (
-  projectType?: ProjectTypeKey
+projectType?: ProjectTypeKey
 ) => {
-  if (!identifier.trim()) {
-    alert("Please enter your email address or phone number")
+if (!identifier.trim()) {
+alert("Please enter your email address")
+return
+}
+
+try {
+const response = await fetch("/api/verify-member", {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+},
+body: JSON.stringify({
+email: identifier.trim(),
+}),
+})
+
+
+const result = await response.json()
+
+// NEW LEAD (not found in BD)
+if (result.access === "lead") {
+  localStorage.setItem(
+    "pending_email",
+    identifier.trim()
+  )
+
+  localStorage.setItem(
+    "pending_project_type",
+    projectType ?? ""
+  )
+
+  window.location.href = "/settings"
+  return
+}
+
+// FREE MEMBER (Plan ID 8)
+if (result.access === "free") {
+  const used = localStorage.getItem(
+    `free_estimate_${identifier.trim()}`
+  )
+
+  if (used) {
+    window.location.href =
+      "https://www.itecfinder.com/join"
     return
   }
 
-  try {
-    const response = await fetch("/api/profile/find", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        identifier,
-      }),
-    })
+  localStorage.setItem(
+    "pending_email",
+    identifier.trim()
+  )
 
-    const result = await response.json()
+  localStorage.setItem(
+    "pending_project_type",
+    projectType ?? ""
+  )
 
-    if (!result.found) {
-      localStorage.setItem(
-        "pending_identifier",
-        identifier
-      )
+  window.location.href = "/settings"
+  return
+}
 
-      window.location.href = "/business-profile"
-      return
-    }
+// PAID MEMBER (Plan ID 112 or 4)
+if (result.access === "paid") {
+  const profile = localStorage.getItem(
+    `business_profile_${identifier.trim()}`
+  )
 
-    const profile = result.profile
-
-    if ((profile.estimatesUsed ?? 0) === 0) {
-      startProject(projectType ?? null)
-      return
-    }
-
-    const verifyResponse = await fetch(
-      "/api/verify-membership",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: profile.email,
-        }),
-      }
+  if (!profile) {
+    localStorage.setItem(
+      "pending_email",
+      identifier.trim()
     )
 
-    const membership =
-      await verifyResponse.json()
+    localStorage.setItem(
+      "pending_project_type",
+      projectType ?? ""
+    )
 
-    if (membership.access === "paid") {
-      startProject(projectType ?? null)
-      return
-    }
-
-    alert("Create a Business Account")
-  } catch (error) {
-    console.error(error)
-    alert("Unable to verify account")
+    window.location.href = "/settings"
+    return
   }
+
+  startProject(projectType ?? null)
+  return
+}
+
+window.location.href =
+  "https://www.itecfinder.com/join"
+
+
+} catch (error) {
+console.error(error)
+alert("Unable to verify account")
+}
 }
   return (
     <div className="space-y-6 px-4 pt-5">
