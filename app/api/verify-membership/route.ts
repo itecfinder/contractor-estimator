@@ -84,8 +84,7 @@ const planId = String(
   user.membership_plan_id ||
   user.plan_id ||
   ""
-).trim()
-
+)
     console.log("PLAN ID:", planId)
 
     if (PAID_PLAN_IDS.includes(planId)) {
