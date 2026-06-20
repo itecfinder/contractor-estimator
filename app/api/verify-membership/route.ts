@@ -19,27 +19,25 @@ export async function POST(req: NextRequest) {
 
     console.log("VERIFY MEMBER:", email)
 
-    const response = await fetch(
-      `${process.env.BD_API_URL}/api/v2/user/search`,
-      {
-        method: "POST",
-        headers: {
-          "X-Api-Key": process.env.BD_API_KEY!,
-          "Content-Type":
-            "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          email,
-        }).toString(),
-      }
-    )
+    const url =
+      `${process.env.BD_API_URL}/api/v2/user/get` +
+      `?property=email` +
+      `&property_value=${encodeURIComponent(email)}`
 
-    console.log("BD STATUS:", response.status)
+    console.log("BD URL:", url)
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Api-Key": process.env.BD_API_KEY!,
+      },
+      cache: "no-store",
+    })
 
     const raw = await response.text()
 
-    console.log("BD RAW RESPONSE:")
-    console.log(raw)
+    console.log("BD STATUS:", response.status)
+    console.log("BD RAW RESPONSE:", raw)
 
     if (!response.ok) {
       throw new Error(
@@ -61,12 +59,10 @@ export async function POST(req: NextRequest) {
       JSON.stringify(data, null, 2)
     )
 
-    // Try common BD response shapes
     const user =
       data?.user ||
-      data?.users?.[0] ||
-      data?.data?.[0] ||
-      data?.results?.[0] ||
+      data?.data ||
+      data?.result ||
       data
 
     console.log(
@@ -74,7 +70,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify(user, null, 2)
     )
 
-    // No user found = lead
+    // No member found = lead
     if (!user || (!user.id && !user.user_id)) {
       return NextResponse.json({
         allowed: true,
@@ -83,8 +79,8 @@ export async function POST(req: NextRequest) {
     }
 
     const planId = String(
-      user.membership_plan_id ||
       user.subscription_id ||
+      user.membership_plan_id ||
       user.plan_id ||
       ""
     )
