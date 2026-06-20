@@ -82,47 +82,18 @@ if (result.access === "paid") {
   startProject(projectType ?? null)
   return
 }
+if (result.access === "free" || result.access === "lead") {
+  const key = `${result.access}_estimate_${email}`
 
-// FREE = 1 estimate
-if (result.access === "free") {
-  const used = localStorage.getItem(
-    `free_estimate_${email}`
-  )
-
-  if (used) {
+  if (localStorage.getItem(key)) {
     alert("Create a business account")
     return
   }
 
-  localStorage.setItem(
-    `free_estimate_${email}`,
-    "true"
-  )
-
+  localStorage.setItem(key, "true")
   startProject(projectType ?? null)
   return
 }
-
-// LEAD = 1 estimate
-if (result.access === "lead") {
-  const used = localStorage.getItem(
-    `lead_estimate_${email}`
-  )
-
-  if (used) {
-    alert("Create a business account")
-    return
-  }
-
-  localStorage.setItem(
-    `lead_estimate_${email}`,
-    "true"
-  )
-
-  startProject(projectType ?? null)
-  return
-}
-
     } catch (error) {
       console.error(error)
       alert("Unable to verify account")
