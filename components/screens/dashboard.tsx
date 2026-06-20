@@ -43,8 +43,7 @@ const order: ProjectTypeKey[] = [
   "roofing",
 ]
 export function Dashboard() {
-  const { t, lang, startProject, projects, openProject, money } = useApp()
-
+  const { t, lang, startProject, projects, openProject, money, go, } = useApp()
   const [identifier, setIdentifier] = useState("")
   const createProject = async (
 projectType?: ProjectTypeKey
@@ -80,7 +79,7 @@ if (result.access === "lead") {
     projectType ?? ""
   )
 
-  window.location.href = "/settings"
+  window.location.href = go "/settings"
   return
 }
 
@@ -91,8 +90,7 @@ if (result.access === "free") {
   )
 
   if (used) {
-    window.location.href =
-      "https://www.itecfinder.com/join"
+    window.location.href = "https://www.itecfinder.com/join"
     return
   }
 
@@ -106,7 +104,7 @@ if (result.access === "free") {
     projectType ?? ""
   )
 
-  window.location.href = "/settings"
+  window.location.href = go "/settings"
   return
 }
 
@@ -127,7 +125,7 @@ if (result.access === "paid") {
       projectType ?? ""
     )
 
-    window.location.href = "/settings"
+    window.location.href = go "/settings"
     return
   }
 
