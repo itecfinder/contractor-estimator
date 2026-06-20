@@ -61,6 +61,8 @@ export async function POST(req: NextRequest) {
 
     const user =
       data?.user ||
+      data?.data?.[0] ||
+      data?.result?.[0] ||
       data?.data ||
       data?.result ||
       data
@@ -77,12 +79,10 @@ export async function POST(req: NextRequest) {
         access: "lead",
       })
     }
-
-    const planId = String(
-      user.subscription_id ||
-      user.membership_plan_id ||
-      user.plan_id ||
-      ""
+const planId = String(
+  user.subscription_id ||
+  user.membership_plan_id ||
+  user.plan_id
     )
 
     console.log("PLAN ID:", planId)
