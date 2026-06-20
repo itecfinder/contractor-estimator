@@ -69,17 +69,10 @@ const result = await response.json()
 
 // NEW LEAD (not found in BD)
 if (result.access === "lead") {
-  localStorage.setItem(
-    "pending_email",
-    identifier.trim()
-  )
+  localStorage.setItem("pending_email", identifier.trim())
+  localStorage.setItem("pending_project_type", projectType ?? "")
 
-  localStorage.setItem(
-    "pending_project_type",
-    projectType ?? ""
-  )
-
-  window.location.href = go"/settings"
+  go("settings")
   return
 }
 
@@ -104,10 +97,9 @@ if (result.access === "free") {
     projectType ?? ""
   )
 
-  window.location.href = go"/settings"
+  go("settings")
   return
 }
-
 // PAID MEMBER (Plan ID 112 or 4)
 if (result.access === "paid") {
   const profile = localStorage.getItem(
@@ -125,7 +117,7 @@ if (result.access === "paid") {
       projectType ?? ""
     )
 
-    window.location.href = go"/settings"
+    go("settings")
     return
   }
 
