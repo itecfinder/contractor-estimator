@@ -4,6 +4,8 @@ const FREE_PLAN_IDS = ["1"]
 const PAID_PLAN_IDS = ["2", "3"]
 
 export async function POST(req: NextRequest) {
+  console.log("VERIFY MEMBER ROUTE HIT")
+
   try {
     const { email } = await req.json()
 
@@ -17,50 +19,47 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const bdResponse = await fetch(
-      `${process.env.BD_API_URL}/api/v2/user/search`,
-      {
-        method: "POST",
-        headers: {
-          "X-Api-Key": process.env.BD_API_KEY!,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-        }),
-      }
-    )
+    const url =
+      `${process.env.BD_API_URL}/api/v2/user/get` +
+      `?property=email` +
+      `&property_value=${encodeURIComponent(email)}`
+
+    const bdResponse = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Api-Key": process.env.BD_API_KEY!,
+      },
+    })
+
+    console.log("BD STATUS:", bdResponse.status)
 
     const text = await bdResponse.text()
+
+    console.log("BD RAW RESPONSE:", text)
 
     if (!bdResponse.ok) {
       throw new Error(`BD Error ${bdResponse.status}: ${text}`)
     }
 
-    const bdData = JSON.parse(text)
+    const bdUser = JSON.parse(text)
 
-    const bdUser = Array.isArray(bdData?.message)
-      ? bdData.message[0]
-      : bdData?.message || bdData?.user || bdData
-
-    if (bdUser?.user_id || bdUser?.id) {
+    // Member found
+    if (bdUser?.id || bdUser?.user_id) {
       const subscriptionId = String(
-        bdUser.subscription_id ||
-        bdUser.subscriptionId ||
-        ""
+        bdUser.subscription_id || ""
       )
 
-      const access =
-        PAID_PLAN_IDS.includes(subscriptionId)
-          ? "paid"
-          : "free"
+      const access = PAID_PLAN_IDS.includes(subscriptionId)
+        ? "paid"
+        : "free"
 
       return NextResponse.json({
         allowed: true,
         access,
-        memberId: bdUser.user_id || bdUser.id,
-        email: bdUser.email || "",
+        memberId: bdUser.id || bdUser.user_id,
         subscriptionId,
+        subscriptionName:
+          bdUser.subscription_name || "",
       })
     }
 
