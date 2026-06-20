@@ -1,124 +1,68 @@
-import { NextRequest, NextResponse } from "next/server"
 
-const FREE_PLAN_IDS = ["8"]
-const PAID_PLAN_IDS = ["4", "112"]
+ 
+ const createProject = async (
+  projectType?: ProjectTypeKey
+) => {
+  if (!identifier.trim()) {
+    alert("Please enter your email address or phone number")
+    return
+  }
 
-export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json()
-
-    if (!email) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          message: "Email required",
-        },
-        { status: 400 }
-      )
-    }
-
-    console.log("VERIFY MEMBER:", email)
-
-    const url =
-      `${process.env.BD_API_URL}/api/v2/user/get` +
-      `?property=email` +
-      `&property_value=${encodeURIComponent(email)}`
-
-    console.log("BD URL:", url)
-
-    const response = await fetch(url, {
-      method: "GET",
+    const response = await fetch("/api/profile/find", {
+      method: "POST",
       headers: {
-        "X-Api-Key": process.env.BD_API_KEY!,
+        "Content-Type": "application/json",
       },
-      cache: "no-store",
+      body: JSON.stringify({
+        identifier,
+      }),
     })
 
-    const raw = await response.text()
+    const result = await response.json()
 
-    console.log("BD STATUS:", response.status)
-    console.log("BD RAW RESPONSE:", raw)
-
-    if (!response.ok) {
-      throw new Error(
-        `BD API Error ${response.status}: ${raw}`
+    if (!result.found) {
+      localStorage.setItem(
+        "pending_identifier",
+        identifier
       )
+
+      window.location.href = "/business-profile"
+      return
     }
 
-    let data: any = null
+    const profile = result.profile
 
-    try {
-      data = raw ? JSON.parse(raw) : null
-    } catch (e) {
-      console.error("JSON PARSE ERROR:", e)
-      throw new Error("Invalid BD response")
+    if ((profile.estimatesUsed ?? 0) === 0) {
+      startProject(projectType ?? null)
+      return
     }
 
-    console.log(
-      "BD PARSED RESPONSE:",
-      JSON.stringify(data, null, 2)
-    )
-
-    const user =
-      data?.user ||
-      data?.data?.[0] ||
-      data?.result?.[0] ||
-      data?.data ||
-      data?.result ||
-      data
-
-    console.log(
-      "BD USER:",
-      JSON.stringify(user, null, 2)
-    )
-
-    // No member found = lead
-    if (!user || (!user.id && !user.user_id)) {
-      return NextResponse.json({
-        allowed: true,
-        access: "lead",
-      })
-    }
-const planId = String(
-  user.subscription_id ||
-  user.membership_plan_id ||
-  user.plan_id ||
-  ""
-)
-    console.log("PLAN ID:", planId)
-
-    if (PAID_PLAN_IDS.includes(planId)) {
-      return NextResponse.json({
-        allowed: true,
-        access: "paid",
-        planId,
-      })
-    }
-
-    if (FREE_PLAN_IDS.includes(planId)) {
-      return NextResponse.json({
-        allowed: true,
-        access: "free",
-        planId,
-      })
-    }
-
-    console.log("UNKNOWN PLAN:", planId)
-
-    return NextResponse.json({
-      allowed: true,
-      access: "lead",
-      planId,
-    })
-  } catch (error) {
-    console.error("VERIFY ERROR:", error)
-
-    return NextResponse.json(
+    const verifyResponse = await fetch(
+      "/api/verify-membership",
       {
-        allowed: false,
-        message: "Unable to verify account",
-      },
-      { status: 500 }
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: profile.email,
+        }),
+      }
     )
+
+    const membership =
+      await verifyResponse.json()
+
+    if (membership.access === "paid") {
+      startProject(projectType ?? null)
+      return
+    }
+
+    alert("Create a Business Account")
+  } catch (error) {
+    console.error(error)
+    alert("Unable to verify account")
   }
 }
+
