@@ -82,8 +82,9 @@ export async function POST(req: NextRequest) {
 const planId = String(
   user.subscription_id ||
   user.membership_plan_id ||
-  user.plan_id
-    )
+  user.plan_id ||
+  ""
+).trim()
 
     console.log("PLAN ID:", planId)
 
