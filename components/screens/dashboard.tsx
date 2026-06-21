@@ -69,23 +69,15 @@ const result = await response.json()
 
 // NEW LEAD (not found in BD)
 if (result.access === "lead") {
-  localStorage.setItem("pending_email", identifier.trim())
-  localStorage.setItem("pending_project_type", projectType ?? "")
-
-  go("settings")
-  return
-}
-
-// FREE MEMBER (Plan ID 8)
-if (result.access === "free") {
-  const used = localStorage.getItem(
-    `free_estimate_${identifier.trim()}`
-  )
+  const key = `lead_estimate_${identifier.trim()}`
+  const used = localStorage.getItem(key)
 
   if (used) {
     window.location.href = "https://www.itecfinder.com/join"
     return
   }
+
+  localStorage.setItem(key, "true")
 
   localStorage.setItem(
     "pending_email",
