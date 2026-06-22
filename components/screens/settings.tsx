@@ -25,7 +25,6 @@ import { cn } from "@/lib/utils"
 const storeOrder: StoreKey[] = ["homeDepot", "lowes", "menards", "abcSupply", "lumber84"]
 
 export function Settings() {
-  const router = useRouter()
   const { t, lang, setLang, business, setBusiness,go } = useApp()
   const fileRef = useRef<HTMLInputElement>(null)
 
