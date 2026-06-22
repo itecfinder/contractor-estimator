@@ -115,4 +115,5 @@ export type ScreenKey =
   | "invoice"
   | "history"
   | "settings"
+  | "project-capture"
 
