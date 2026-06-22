@@ -23,11 +23,20 @@ const storeOrder: StoreKey[] = ["homeDepot", "lowes", "menards", "abcSupply", "l
 export function Settings() {
   const { t, lang, setLang, business, setBusiness } = useApp()
   const fileRef = useRef<HTMLInputElement>(null)
-
   const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) setBusiness({ ...business, logoUrl: URL.createObjectURL(file) })
-  }
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const url = URL.createObjectURL(file)
+
+  setBusiness({
+    ...business,
+    logoUrl: url,
+  })
+
+  // optional but recommended cleanup later
+  // store previous URL and revoke it
+}
 
   return (
     <div className="space-y-6 px-4 pt-5">
