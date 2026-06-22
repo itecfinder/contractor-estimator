@@ -41,12 +41,6 @@ const handleSave = async () => {
   try {
     setSaving(true)
 
-    if (!business.email) {
-      toast.error("Email required")
-      setSaving(false)
-      return
-    }
-
     // 1️⃣ FIRE AND FORGET BD CALL (DO NOT WAIT)
     fetch("/api/create-free-member", {
       method: "POST",
@@ -56,7 +50,7 @@ const handleSave = async () => {
       body: JSON.stringify({
         first_name: business.name.split(" ")[0] || "",
         last_name: business.name.split(" ").slice(1).join(" ") || "",
-        email: business.email,
+        email: business.email || "", // still send empty if missing
         phone: business.phone,
         address: business.address,
         city: "",
@@ -70,7 +64,7 @@ const handleSave = async () => {
 
     // 2️⃣ SAVE LOCAL PROFILE IMMEDIATELY
     localStorage.setItem(
-      `business_profile_${business.email}`,
+      `business_profile_${business.email || "anonymous"}`,
       JSON.stringify(business)
     )
 
@@ -78,8 +72,8 @@ const handleSave = async () => {
 
     toast.success(t("saved"))
 
-    // 3️⃣ INSTANT REDIRECT (NO WAIT)
-   router.push("/project-capture")
+    // 3️⃣ INSTANT REDIRECT
+    router.push("/project-capture")
   } catch (error) {
     console.error(error)
     toast.error("Something went wrong")
