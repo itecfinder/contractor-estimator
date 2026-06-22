@@ -26,11 +26,19 @@ export function Settings() {
   const { t, lang, setLang, business, setBusiness } = useApp()
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) setBusiness({ ...business, logoUrl: URL.createObjectURL(file) })
-  }
 
+  const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const url = URL.createObjectURL(file)
+
+  setBusiness(prev => ({
+    ...prev,
+    logoUrl: url,
+  }))
+}
+  
   return (
     <div className="space-y-6 px-4 pt-5">
       <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
