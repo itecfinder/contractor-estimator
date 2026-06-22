@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
 import { cn } from "@/lib/utils"
 
 const storeOrder: StoreKey[] = ["homeDepot", "lowes", "menards", "abcSupply", "lumber84"]
@@ -27,7 +26,11 @@ const storeOrder: StoreKey[] = ["homeDepot", "lowes", "menards", "abcSupply", "l
 export function Settings() {
   const { t, lang, setLang, business, setBusiness,go } = useApp()
   const fileRef = useRef<HTMLInputElement>(null)
-
+const onSave = () => {
+  localStorage.setItem("business", JSON.stringify(business))
+  toast.success(t("saved"))
+  go("projectCapture")
+}
   const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0]
   if (!file) return
