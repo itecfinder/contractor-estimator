@@ -15,7 +15,6 @@ export type ScanMode = "roof" | "walls" | "floors" | "generic"
 
 export type Customer = {
   name: string
-  category: string
   phone: string
   email: string
   address: string
@@ -92,6 +91,7 @@ export type Project = {
 
 export type BusinessProfile = {
   name: string
+  category: string
   phone: string
   email: string
   address: string
