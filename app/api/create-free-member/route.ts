@@ -33,8 +33,10 @@ export async function POST(req: NextRequest) {
         "X-Api-Key": process.env.BD_API_KEY!,
       },
       body: JSON.stringify({
-        email,
-        password,
+        email: business.email,
+
+  password: Math.floor(100000 + Math.random() * 900000).toString(),
+
         subscription_id: "8",
 
         first_name: business.first_name || "",
