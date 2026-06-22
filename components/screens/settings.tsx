@@ -3,6 +3,7 @@
 import { useRef } from "react"
 import { Upload } from "lucide-react"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 import { storeLabels } from "@/lib/i18n"
 import { useApp } from "@/lib/store"
 import type { Lang, StoreKey } from "@/lib/types"
@@ -21,6 +22,7 @@ import { cn } from "@/lib/utils"
 const storeOrder: StoreKey[] = ["homeDepot", "lowes", "menards", "abcSupply", "lumber84"]
 
 export function Settings() {
+  const router = useRouter()
   const { t, lang, setLang, business, setBusiness } = useApp()
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -113,9 +115,12 @@ export function Settings() {
         </div>
       </Section>
 
-      <Button onClick={() => toast.success(t("saved"))} className="h-12 w-full text-base font-semibold">
-        {t("save")}
-      </Button>
+      <Button
+  onClick={() => router.push("/project-capture")}
+  className="h-12 w-full text-base font-semibold"
+>
+  {t("save")}
+</Button>
     </div>
   )
 }
