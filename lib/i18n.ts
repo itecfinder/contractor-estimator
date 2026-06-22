@@ -21,6 +21,7 @@ export const dict = {
   phone: { en: "Phone", es: "Teléfono" },
   email: { en: "Email", es: "Correo Electrónico" },
   address: { en: "Project Address", es: "Dirección del Proyecto" },
+  businessAddress: { en: "Business Address", es: "Dirección del Negocio" },
   zip: { en: "ZIP Code", es: "Código Postal" },
   jobDetails: { en: "Job Details", es: "Detalles del Trabajo" },
   projectType: { en: "Project Type", es: "Tipo de Proyecto" },
