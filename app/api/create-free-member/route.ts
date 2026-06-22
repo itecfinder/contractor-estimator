@@ -55,47 +55,45 @@ export async function POST(req: NextRequest) {
         { status: 502 }
       )
     }
-
+if (response.ok) {
+  return NextResponse.json({
+    success: true,
+    status: "created",
+    email,
+    password,
+    user: data,
+  })
+}
     // 2️⃣ SUCCESS CASE (NEW USER)
-    if (response.ok) {
-      return NextResponse.json({
-        success: true,
-        status: "created",
-        user: data,
-        email,
-        password, // ⚠️ only returned so frontend can auto-login
-      })
-    }
+    if (!response.ok) {
+  const msg = JSON.stringify(data).toLowerCase()
 
-    const errorText = JSON.stringify(data).toLowerCase()
+  const isDuplicate =
+    msg.includes("duplicate") ||
+    msg.includes("already") ||
+    msg.includes("exists")
 
-    // 3️⃣ DUPLICATE HANDLING (CRITICAL FIX)
-    if (
-      errorText.includes("duplicate") ||
-      errorText.includes("already") ||
-      errorText.includes("exists")
-    ) {
-      console.log("⚠️ DUPLICATE USER:", email)
+  if (isDuplicate) {
+    console.log("⚠️ DUPLICATE USER:", email)
 
-      // OPTIONAL: try to fetch user state indirectly via BD response
-      return NextResponse.json({
-        success: true,
-        status: "existing_user",
-        user: data,
-        email,
-        password, // optional fallback
-      })
-    }
+    return NextResponse.json({
+      success: true,
+      status: "existing_user",
+      email,
+      password: null,
+      user: null,
+    })
+  }
 
-    // 4️⃣ OTHER ERRORS
-    return NextResponse.json(
-      {
-        success: false,
-        message: "BD create failed",
-        error: data,
-      },
-      { status: 502 }
-    )
+  return NextResponse.json(
+    {
+      success: false,
+      message: "BD create failed",
+      error: data,
+    },
+    { status: 502 }
+  )
+}
   } catch (error) {
     console.error(" BD CREATE ERROR:", error)
 
