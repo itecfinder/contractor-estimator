@@ -1,5 +1,3 @@
-"use client"
-
 import { ChevronRight, FolderClock, Plus } from "lucide-react"
 import { projectTypeLabels } from "@/lib/i18n"
 import { computeTotals, useApp } from "@/lib/store"
@@ -7,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { StatusBadge } from "./status-badge"
 
 export function History() {
- const { t, lang, projects, openProject, money, go } = useApp()
+  const { t, lang, projects, openProject, startProject, money } = useApp()
 
   return (
     <div className="px-4 pt-5">
@@ -16,12 +14,10 @@ export function History() {
           {t("history")}
         </h1>
    <Button
-  size="sm"
-  onClick={() => go("dashboard")}
-  className="h-9"
+  onClick={() => createProject()}
+  className="mt-4 h-12 w-full text-base font-semibold"
 >
-  <Plus className="size-4" />
-  {t("newProject")}
+  Start Estimate
 </Button>
       </div>
       {projects.length === 0 ? (
