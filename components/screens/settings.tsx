@@ -1,6 +1,7 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Upload } from "lucide-react"
 import { toast } from "sonner"
 import { storeLabels } from "@/lib/i18n"
@@ -19,16 +20,70 @@ import {
 import { cn } from "@/lib/utils"
 
 const storeOrder: StoreKey[] = ["homeDepot", "lowes", "menards", "abcSupply", "lumber84"]
-
 export function Settings() {
   const { t, lang, setLang, business, setBusiness } = useApp()
+  const router = useRouter()
+  const [saving, setSaving] = useState(false)
+
   const fileRef = useRef<HTMLInputElement>(null)
 
   const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) setBusiness({ ...business, logoUrl: URL.createObjectURL(file) })
+
+    if (file) {
+      setBusiness({
+        ...business,
+        logoUrl: URL.createObjectURL(file),
+      })
+    }
   }
 
+  const handleSave = async () => {
+    try {
+      setSaving(true)
+
+      if (!business.email) {
+        toast.error("Email required")
+        return
+      }
+
+      const response = await fetch("/api/create-free-member", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: business.name.split(" ")[0] || "",
+          last_name: business.name.split(" ").slice(1).join(" ") || "",
+          email: business.email,
+          phone: business.phone,
+          address: business.address,
+          city: "",
+          state_code: "",
+          zip_code: "",
+          country_code: "US",
+        }),
+      })
+
+      const data = await response.json()
+
+      console.log("FREE MEMBER RESULT:", data)
+
+      if (!data.success) {
+        toast.error(data.message || "Unable to create account")
+        return
+      }
+
+      toast.success(t("saved"))
+
+      router.push("/customer-info")
+    } catch (error) {
+      console.error(error)
+      toast.error("Something went wrong")
+    } finally {
+      setSaving(false)
+    }
+  }
   return (
     <div className="space-y-6 px-4 pt-5">
       <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
@@ -112,10 +167,10 @@ export function Settings() {
           </Select>
         </div>
       </Section>
-
-      <Button onClick={() => toast.success(t("saved"))} className="h-12 w-full text-base font-semibold">
-        {t("save")}
-      </Button>
+<Button
+  onClick={handleSave} disabled={saving} className="h-12 w-full text-base font-semibol>
+  {saving ? "Saving..." : t("save")}
+</Button>
     </div>
   )
 }
