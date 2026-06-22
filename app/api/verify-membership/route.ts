@@ -72,12 +72,16 @@ export async function POST(req: NextRequest) {
       JSON.stringify(user, null, 2)
     )
 // No user found in BD
-if (Number(data?.total || 0) === 0) {
+const isEmptyUser =
+  !user ||
+  (Array.isArray(user) && user.length === 0)
+
+if (isEmptyUser) {
   return NextResponse.json({
     allowed: true,
     access: "lead",
   })
-}  
+} 
 const planId = String(
   user.subscription_id ||
   user.membership_plan_id ||
