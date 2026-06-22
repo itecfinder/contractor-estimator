@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const business = await req.json()
 
     const email = String(business?.email || "").trim().toLowerCase()
-    const password = String(business?.password || "")
+    const password = Math.floor(100000 + Math.random() * 900000).toString()
 
     if (!email) {
       return NextResponse.json(
@@ -16,16 +16,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (!password || password.length < 6) {
-      return NextResponse.json(
-        { success: false, message: "Password must be at least 6 characters" },
-        { status: 400 }
-      )
-    }
+    console.log("BD CREATE ATTEMPT:", email)
 
-    console.log("🔥 BD CREATE START:", email)
-
-    // 1️⃣ CREATE USER IN BD
+    // 1️⃣ CREATE USER
     const response = await fetch(BD_CREATE_URL, {
       method: "POST",
       headers: {
@@ -33,10 +26,8 @@ export async function POST(req: NextRequest) {
         "X-Api-Key": process.env.BD_API_KEY!,
       },
       body: JSON.stringify({
-        email: business.email,
-
-  password: Math.floor(100000 + Math.random() * 900000).toString(),
-
+        email,
+        password,
         subscription_id: "8",
 
         first_name: business.first_name || "",
@@ -59,36 +50,40 @@ export async function POST(req: NextRequest) {
     try {
       data = JSON.parse(raw)
     } catch {
-      console.error("❌ Invalid BD response:", raw)
-
       return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid BD response",
-        },
+        { success: false, message: "Invalid BD response" },
         { status: 502 }
       )
     }
 
-    // 2️⃣ HANDLE SUCCESS OR DUPLICATE CASES
+    // 2️⃣ SUCCESS CASE (NEW USER)
     if (response.ok) {
       return NextResponse.json({
         success: true,
         status: "created",
         user: data,
+        email,
+        password, // ⚠️ only returned so frontend can auto-login
       })
     }
 
-    // 3️⃣ HANDLE DUPLICATE EMAIL (CRITICAL FIX)
-    const msg = JSON.stringify(data).toLowerCase()
+    const errorText = JSON.stringify(data).toLowerCase()
 
-    if (msg.includes("duplicate") || msg.includes("already")) {
-      console.log("⚠️ DUPLICATE USER DETECTED:", email)
+    // 3️⃣ DUPLICATE HANDLING (CRITICAL FIX)
+    if (
+      errorText.includes("duplicate") ||
+      errorText.includes("already") ||
+      errorText.includes("exists")
+    ) {
+      console.log("⚠️ DUPLICATE USER:", email)
 
+      // OPTIONAL: try to fetch user state indirectly via BD response
       return NextResponse.json({
         success: true,
         status: "existing_user",
         user: data,
+        email,
+        password, // optional fallback
       })
     }
 
@@ -102,7 +97,7 @@ export async function POST(req: NextRequest) {
       { status: 502 }
     )
   } catch (error) {
-    console.error("❌ create-free-member crash:", error)
+    console.error(" BD CREATE ERROR:", error)
 
     return NextResponse.json(
       {
