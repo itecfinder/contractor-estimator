@@ -27,7 +27,6 @@ export function Settings() {
   const { t, lang, setLang, business, setBusiness,go } = useApp()
   const fileRef = useRef<HTMLInputElement>(null)
 const onSave = () => {
-  localStorage.setItem("business", JSON.stringify(business))
   toast.success(t("saved"))
   go("project-capture")
 }
