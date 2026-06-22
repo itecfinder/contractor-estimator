@@ -34,12 +34,19 @@ export function Settings() {
 
   const url = URL.createObjectURL(file)
 
-  setBusiness(prev => ({
-    ...prev,
-    logoUrl: url,
-  }))
+  setBusiness(prev => {
+    // cleanup old logo URL if it was also an object URL
+    if (prev.logoUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(prev.logoUrl)
+    }
+
+    return {
+      ...prev,
+      logoUrl: url,
+    }
+  })
 }
-  
+
   return (
     <div className="space-y-6 px-4 pt-5">
       <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
