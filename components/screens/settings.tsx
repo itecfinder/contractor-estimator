@@ -79,8 +79,7 @@ const handleSave = async () => {
     toast.success(t("saved"))
 
     // 3️⃣ INSTANT REDIRECT (NO WAIT)
-    router.push("/customer-info")
-
+    go("projectCapture")
   } catch (error) {
     console.error(error)
     toast.error("Something went wrong")
