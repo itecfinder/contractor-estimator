@@ -162,8 +162,8 @@ export function Settings() {
           </Select>
         </div>
       </Section>
-
-      <Button onClick={onSave} className="h-12 w-full text-base font-semibold">
+<Button onClick={() => go("project-capture")} className="h-12 w-full text-base font-semibold">
+      
         {t("save")}
       </Button>
     </div>
