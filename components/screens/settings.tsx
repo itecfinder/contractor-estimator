@@ -1,7 +1,5 @@
 "use client"
 
-import { useRef } from "react"
-import { useRouter } from "next/navigation"
 import { Upload } from "lucide-react"
 import { toast } from "sonner"
 
@@ -161,5 +159,3 @@ function LabeledInput({
     </div>
   )
 }
-
-
