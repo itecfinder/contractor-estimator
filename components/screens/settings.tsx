@@ -77,6 +77,8 @@ export function Settings() {
         <LabeledInput label={t("phone")} value={business.phone} onChange={(v) => setBusiness({ ...business, phone: v })} />
         <LabeledInput label={t("email")} value={business.email} onChange={(v) => setBusiness({ ...business, email: v })} />
         <LabeledInput label={t("businessAddress")} value={business.address} onChange={(v) => setBusiness({ ...business, address: v })} />
+        <LabeledInput label={t("city")} value={business.city ?? ""} onChange={(v) => setBusiness({ ...business, city: v })}/>
+        <LabeledInput label={t("zipCode")} value={business.zip_code ?? ""} onChange={(v) => setBusiness({ ...business, zip_code: v })}/>
       </Section>
 
       {/* Defaults */}
