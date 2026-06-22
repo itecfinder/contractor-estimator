@@ -10,16 +10,17 @@ export function History() {
   return (
     <div className="px-4 pt-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
-          {t("history")}
-        </h1>
+  <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
+    {t("history")}
+  </h1>
+
   <Button
-  onClick={() => startProject()}
-  className="mt-4 h-12 w-full text-base font-semibold"
->
-  Start Estimate
-</Button>
-      </div>
+    onClick={() => startProject()}
+    className="h-9 px-4 text-sm font-semibold"
+  >
+    Start Estimate
+  </Button>
+</div>
       {projects.length === 0 ? (
         <div className="mt-10 flex flex-col items-center gap-3 text-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
