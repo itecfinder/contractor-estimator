@@ -1,7 +1,3 @@
-import { NextRequest, NextResponse } from "next/server"
-
-const BD_CREATE_URL = `${process.env.BD_API_URL}/api/v2/user/create`
-
 export async function POST(req: NextRequest) {
   try {
     const business = await req.json()
@@ -16,9 +12,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log("BD CREATE ATTEMPT:", email)
-
-    // 1️⃣ CREATE USER
     const response = await fetch(BD_CREATE_URL, {
       method: "POST",
       headers: {
@@ -29,7 +22,6 @@ export async function POST(req: NextRequest) {
         email,
         password,
         subscription_id: "8",
-
         first_name: business.first_name || "",
         last_name: business.last_name || "",
         phone: business.phone || "",
@@ -38,7 +30,6 @@ export async function POST(req: NextRequest) {
         state_code: business.state_code || "",
         zip_code: business.zip_code || "",
         country_code: business.country_code || "US",
-
         active: "1",
         flow_source: "itecfinder_estimator",
       }),
@@ -55,47 +46,44 @@ export async function POST(req: NextRequest) {
         { status: 502 }
       )
     }
-if (response.ok) {
-  return NextResponse.json({
-    success: true,
-    status: "created",
-    email,
-    password,
-    user: data,
-  })
-}
-    // 2️⃣ SUCCESS CASE (NEW USER)
+
+    const msg = JSON.stringify(data).toLowerCase()
+
+    const isDuplicate =
+      msg.includes("duplicate") ||
+      msg.includes("already") ||
+      msg.includes("exists")
+
+    if (isDuplicate) {
+      return NextResponse.json({
+        success: true,
+        status: "existing_user",
+        email,
+        password: null,
+        user: null,
+      })
+    }
+
     if (!response.ok) {
-  const msg = JSON.stringify(data).toLowerCase()
-
-  const isDuplicate =
-    msg.includes("duplicate") ||
-    msg.includes("already") ||
-    msg.includes("exists")
-
-  if (isDuplicate) {
-    console.log("⚠️ DUPLICATE USER:", email)
+      return NextResponse.json(
+        {
+          success: false,
+          message: "BD create failed",
+          error: data,
+        },
+        { status: 502 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
-      status: "existing_user",
+      status: "created",
       email,
-      password: null,
-      user: null,
+      password,
+      user: data,
     })
-  }
-
-  return NextResponse.json(
-    {
-      success: false,
-      message: "BD create failed",
-      error: data,
-    },
-    { status: 502 }
-  )
-}
   } catch (error) {
-    console.error(" BD CREATE ERROR:", error)
+    console.error("BD CREATE ERROR:", error)
 
     return NextResponse.json(
       {
