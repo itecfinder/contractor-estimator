@@ -27,7 +27,7 @@ export function Settings() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   const onSave = () => {
-    go("project-capture")
+    go("capture")
   }
 
   const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,7 +162,7 @@ export function Settings() {
           </Select>
         </div>
       </Section>
-<Button onClick={() => go("project-capture")} className="h-12 w-full text-base font-semibold">
+<Button onClick={() => go("capture")} className="h-12 w-full text-base font-semibold">
       
         {t("save")}
       </Button>
