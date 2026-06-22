@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef } from "react"
-import { useRouter } from "next/navigation"
 import { Upload } from "lucide-react"
 import { toast } from "sonner"
 
@@ -125,9 +124,8 @@ export function Settings() {
           </Select>
         </div>
       </Section>
-
-      <Button
-  onClick={() => go("/project-capture")}
+<Button
+  onClick={() => go("projectCapture")}
   className="h-12 w-full text-base font-semibold"
 >
   {t("save")}
