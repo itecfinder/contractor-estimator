@@ -29,7 +29,7 @@ export function Settings() {
 const onSave = () => {
   localStorage.setItem("business", JSON.stringify(business))
   toast.success(t("saved"))
-  go("projectCapture")
+  go("project-Capture")
 }
   const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0]
@@ -134,9 +134,8 @@ const onSave = () => {
         </div>
       </Section>
 <Button
-  onClick={() => go("project-capture")}
-  className="h-12 w-full text-base font-semibold"
->
+  onClick={onSave}
+  className="h-12 w-full text-base font-semibold">
   {t("save")}
 </Button>
     </div>
