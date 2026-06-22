@@ -73,6 +73,7 @@ export function Settings() {
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={onLogo} />
         </div>
         <LabeledInput label={t("businessName")} value={business.name} onChange={(v) => setBusiness({ ...business, name: v })} />
+        <LabeledInput label={t("businessType")} value={business.category ?? ""}  onChange={(v) => setBusiness({ ...business, category: v }) }/>
         <LabeledInput label={t("phone")} value={business.phone} onChange={(v) => setBusiness({ ...business, phone: v })} />
         <LabeledInput label={t("email")} value={business.email} onChange={(v) => setBusiness({ ...business, email: v })} />
         <LabeledInput label={t("address")} value={business.address} onChange={(v) => setBusiness({ ...business, address: v })} />
