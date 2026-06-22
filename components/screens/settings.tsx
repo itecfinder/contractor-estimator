@@ -27,7 +27,6 @@ export function Settings() {
   const { t, lang, setLang, business, setBusiness,go } = useApp()
   const fileRef = useRef<HTMLInputElement>(null)
 const onSave = () => {
-  toast.success(t("saved"))
   go("project-capture")
 }
   const onLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
