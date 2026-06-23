@@ -9,10 +9,9 @@ import {
   type ReactNode,
 } from "react"
 
-import { useApp } from "@/lib/store"
-import { computeTotals } from "@/services/pricing"
-import { translate, type DictKey } from "./i18n"
+import { computeTotals, type Totals } from "@/services/pricing"
 import { blankProject } from "@/services/projects"
+import { translate, type DictKey } from "./i18n"
 
 import type {
   BusinessProfile,
@@ -65,85 +64,118 @@ export function AppProvider({ children }: { children: ReactNode }) {
     currency: "USD",
   })
 
-  const t = useCallback((k: DictKey) => translate(k, lang), [lang])
+  const t = useCallback(
+    (k: DictKey) => translate(k, lang),
+    [lang]
+  )
 
   const go = useCallback((next: ScreenKey) => {
     setScreen((prev) => (prev === next ? prev : next))
   }, [])
 
-  const startProject = useCallback((type: ProjectTypeKey | null = null) => {
-    setCurrent(blankProject(type))
-    setScreen("projectCapture")
-  }, [])
+  const startProject = useCallback(
+    (type: ProjectTypeKey | null = null) => {
+      setCurrent(blankProject(type))
+      setScreen("projectCapture")
+    },
+    []
+  )
 
   const openProject = useCallback(
     (id: string) => {
-      const p = projects.find((x) => x.id === id)
-      if (!p) return
+      const project = projects.find((p) => p.id === id)
 
-      setCurrent({ ...p })
-      setScreen(p.status === "draft" ? "projectCapture" : "estimate")
+      if (!project) return
+
+      setCurrent({ ...project })
+
+      setScreen(
+        project.status === "draft"
+          ? "projectCapture"
+          : "estimate"
+      )
     },
-    [projects],
+    [projects]
   )
 
-  const updateCurrent = useCallback((patch: Partial<Project>) => {
-    setCurrent((c) => (c ? { ...c, ...patch } : c))
-  }, [])
+  const updateCurrent = useCallback(
+    (patch: Partial<Project>) => {
+      setCurrent((curr) =>
+        curr ? { ...curr, ...patch } : curr
+      )
+    },
+    []
+  )
 
   const saveCurrent = useCallback(() => {
-    setCurrent((c) => {
-      if (!c) return c
+    setCurrent((curr) => {
+      if (!curr) return curr
 
       setProjects((prev) => {
-        const exists = prev.some((p) => p.id === c.id)
-        return exists
-          ? prev.map((p) => (p.id === c.id ? c : p))
-          : [c, ...prev]
+        const exists = prev.some((p) => p.id === curr.id)
+
+        if (exists) {
+          return prev.map((p) =>
+            p.id === curr.id ? curr : p
+          )
+        }
+
+        return [curr, ...prev]
       })
 
-      return c
+      return curr
     })
   }, [])
 
-  const money = useCallback(
-    (n: number) =>
-      new Intl.NumberFormat(lang === "es" ? "es-US" : "en-US", {
-        style: "currency",
-        currency: business.currency || "USD",
-      }).format(n || 0),
-    [lang, business.currency],
-  )
+  const totals = useMemo<Totals>(() => {
+    if (!current) {
+      return {
+        materials: 0,
+        labor: 0,
+        subtotal: 0,
+        withProfit: 0,
+        tax: 0,
+        total: 0,
+      }
+    }
 
-  const totals = useMemo(
-    () =>
-      current
-        ? computeTotals(current.lineItems, current.estimate)
-        : {
-            materials: 0,
-            labor: 0,
-            subtotal: 0,
-            withProfit: 0,
-            tax: 0,
-            total: 0,
-          },
-    [current],
+    return computeTotals(
+      current.lineItems,
+      current.estimate
+    )
+  }, [current])
+
+  const money = useCallback(
+    (value: number) =>
+      new Intl.NumberFormat(
+        lang === "es" ? "es-US" : "en-US",
+        {
+          style: "currency",
+          currency: business.currency || "USD",
+        }
+      ).format(value || 0),
+    [lang, business.currency]
   )
 
   const value: Ctx = {
     lang,
     setLang,
     t,
+
     screen,
     go,
+
     business,
     setBusiness,
+
     projects,
     current,
+
     startProject,
     openProject,
     updateCurrent,
     saveCurrent,
+
     totals,
     money,
   }
@@ -157,6 +189,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
 export function useApp() {
   const ctx = useContext(AppContext)
-  if (!ctx) throw new Error("useApp must be used within AppProvider")
+
+  if (!ctx) {
+    throw new Error(
+      "useApp must be used within AppProvider"
+    )
+  }
+
   return ctx
 }
