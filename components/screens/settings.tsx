@@ -42,21 +42,22 @@ export function Settings() {
   // -----------------------------
   // LOGO HANDLER (with cleanup support)
   // -----------------------------
-  const onLogo = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const prevUrl = useRef<string | null>(null)
 
-    const url = URL.createObjectURL(file)
-    updateBusiness({ logoUrl: url })
+const onLogo = (e: ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const url = URL.createObjectURL(file)
+
+  if (prevUrl.current) {
+    URL.revokeObjectURL(prevUrl.current)
   }
 
-  useEffect(() => {
-    return () => {
-      if (business.logoUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(business.logoUrl)
-      }
-    }
-  }, [business.logoUrl])
+  prevUrl.current = url
+  updateBusiness({ logoUrl: url })
+}
+ 
 
   // -----------------------------
   // FIELD UPDATER
