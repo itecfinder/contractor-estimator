@@ -1,5 +1,4 @@
-import type { EstimateSettings, LineItem } from "../lib/types"
-
+import type { EstimateSettings, LineItem } from "@/lib/types"
 export const defaultEstimate: EstimateSettings = {
   laborRate: 60,
   wastePct: 10,
@@ -27,7 +26,7 @@ export function computeTotals(
   for (const it of items) {
     const line = it.qty * it.unitPrice
 
-    if (it.type === "material")
+    if (it.type === "material") {
       materials += line * (1 + s.wastePct / 100)
     else labor += line
   }
