@@ -11,20 +11,25 @@ export function History() {
   const { t, lang, projects, openProject, startProject, money } = useApp()
 
   return (
-    <div className="px-4 pt-5">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
-          {t("history")}
-        </h1>
-<button
-  onClick={() => console.log("CLICK WORKS")}
-  className="fixed top-20 left-20 z-[9999] bg-red-500 text-white p-4"
->
-  TEST BUTTON
-</button>
-      </div>
+   <div className="flex items-center justify-between py-3">
+  <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
+    {t("history")}
+  </h1>
 
-      {projects.length === 0 ? (
+  <Button
+    size="sm"
+    onClick={() => {
+      console.log("NEW PROJECT CLICKED")
+      startProject(null)
+    }}
+    className="h-9 shrink-0"
+  >
+    <Plus className="size-4" />
+    {t("newProject")}
+  </Button>
+</div>
+    
+  {projects.length === 0 ? (
         <div className="mt-10 flex flex-col items-center gap-3 text-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <FolderClock className="size-7" />
