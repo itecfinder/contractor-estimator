@@ -16,8 +16,15 @@ export function History() {
         <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
           {t("history")}
         </h1>
-
-        <Button size="sm" onClick={() => startProject(null)} className="h-9">
+<Button
+  size="sm"
+  onClick={() => {
+    console.log("NEW PROJECT CLICKED")
+    startProject(null)
+  }}
+  className="h-9"
+>
+       
           <Plus className="size-4" />
           {t("newProject")}
         </Button>
