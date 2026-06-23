@@ -1,35 +1,27 @@
-"use client"
-
-import { ChevronRight, FolderClock, Plus } from "lucide-react"
-import { projectTypeLabels } from "@/lib/i18n"
-import { useApp } from "@/lib/store"
-import { computeTotals } from "@/lib/services/pricing"
-import { Button } from "@/components/ui/button"
-import { StatusBadge } from "./status-badge"
-
 export function History() {
   const { t, lang, projects, openProject, startProject, money } = useApp()
 
   return (
-   <div className="flex items-center justify-between py-3">
-  <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
-    {t("history")}
-  </h1>
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between py-3">
+        <h1 className="text-2xl font-bold tracking-tight font-[family-name:var(--font-heading)]">
+          {t("history")}
+        </h1>
 
-  <Button
-    size="sm"
-    onClick={() => {
-      console.log("NEW PROJECT CLICKED")
-      startProject(null)
-    }}
-    className="h-9 shrink-0"
-  >
-    <Plus className="size-4" />
-    {t("newProject")}
-  </Button>
-</div>
-    
-  {projects.length === 0 ? (
+        <Button
+          size="sm"
+          onClick={() => {
+            console.log("NEW PROJECT CLICKED")
+            startProject(null)
+          }}
+          className="h-9 shrink-0"
+        >
+          <Plus className="size-4" />
+          {t("newProject")}
+        </Button>
+      </div>
+
+      {projects.length === 0 ? (
         <div className="mt-10 flex flex-col items-center gap-3 text-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <FolderClock className="size-7" />
