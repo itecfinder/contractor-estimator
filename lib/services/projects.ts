@@ -1,7 +1,6 @@
 import { uid } from "@/lib/mock"
 import type { Project, ProjectTypeKey } from "@/lib/types"
-import { defaultEstimate } from "@/services/pricing"
-
+import { computeTotals, type Totals } from "@/pricing"
 export function blankProject(
   type: ProjectTypeKey | null = null,
 ): Project {
