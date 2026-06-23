@@ -13,13 +13,18 @@ import {
   Triangle,
   type LucideIcon,
 } from "lucide-react"
-import { projectTypeLabels } from "@/lib/i18n"
-import { computeTotals, useApp } from "@/lib/store"
-import type { ProjectTypeKey } from "@/lib/types"
-import { Button } from "@/components/ui/button"
-import { StatusBadge } from "./status-badge"
 import { useState } from "react"
+import { useApp } from "@/lib/store"
+import { computeTotals } from "@/lib/services/pricing"
+
+import { projectTypeLabels } from "@/lib/i18n"
+import type { ProjectTypeKey } from "@/lib/types"
+
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { StatusBadge } from "./status-badge"
+
+import { /* lucide icons here */ } from "lucide-react"
 const typeIcons: Record<ProjectTypeKey, LucideIcon> = {
   kitchenBath: CookingPot,
   homeRemodel: House,
