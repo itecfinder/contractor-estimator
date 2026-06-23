@@ -1,5 +1,4 @@
-import { useApp } from "@/lib/store"
-import { computeTotals } from "@/lib/services/pricing"
+import type { EstimateSettings, LineItem } from "@/lib/types"
 
 export const defaultEstimate: EstimateSettings = {
   laborRate: 60,
