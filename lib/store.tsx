@@ -9,7 +9,8 @@ import {
   type ReactNode,
 } from "react"
 
-import { computeTotals, type Totals } from "@/services/pricing"
+import { useApp } from "@/lib/store"
+import { computeTotals } from "@/services/pricing"
 import { translate, type DictKey } from "./i18n"
 import { blankProject } from "@/services/projects"
 
