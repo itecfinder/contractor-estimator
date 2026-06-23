@@ -9,14 +9,9 @@ import {
   type ReactNode,
 } from "react"
 
-import {
-  computeTotals,
-  defaultEstimate,
-  type Totals,
-} from "@/services/pricing"
-
+import { computeTotals, type Totals } from "@/services/pricing"
 import { translate, type DictKey } from "./i18n"
-import { uid } from "./mock"
+import { blankProject } from "@/services/projects"
 
 import type {
   BusinessProfile,
@@ -25,22 +20,7 @@ import type {
   ProjectTypeKey,
   ScreenKey,
 } from "./types"
-function blankProject(type: ProjectTypeKey | null = null): Project {
-  return {
-    id: uid(),
-    createdAt: Date.now(),
-    status: "draft",
-    type,
-    customer: { name: "", phone: "", email: "", address: "", zip: "" },
-    notes: "",
-    images: [],
-    analysis: null,
-    estimate: { ...defaultEstimate },
-    lineItems: [],
-    paymentTerms: "Due on receipt",
-    invoiceNumber: null,
-  }
-}
+
 type Ctx = {
   lang: Lang
   setLang: (l: Lang) => void
@@ -86,26 +66,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const t = useCallback((k: DictKey) => translate(k, lang), [lang])
 
-  /**
-   * SAFE NAVIGATION (prevents invalid transitions)
-   */
-  const go = useCallback(
-    (next: ScreenKey) => {
-      setScreen((prev) => {
-        if (prev === next) return prev
-        return next
-      })
-    },
-    [],
-  )
+  const go = useCallback((next: ScreenKey) => {
+    setScreen((prev) => (prev === next ? prev : next))
+  }, [])
 
-  const startProject = useCallback(
-    (type: ProjectTypeKey | null = null) => {
-      setCurrent(blankProject(type))
-      setScreen("projectCapture")
-    },
-    [],
-  )
+  const startProject = useCallback((type: ProjectTypeKey | null = null) => {
+    setCurrent(blankProject(type))
+    setScreen("projectCapture")
+  }, [])
 
   const openProject = useCallback(
     (id: string) => {
