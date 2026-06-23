@@ -1,3 +1,6 @@
+import { uid } from "./mock"
+import type { Project, ProjectTypeKey } from "./types"
+import { defaultEstimate } from "@/services/pricing"
 function blankProject(type: ProjectTypeKey | null = null): Project {
   return {
     id: uid(),
