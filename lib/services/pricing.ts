@@ -1,4 +1,4 @@
-import type { EstimateSettings, LineItem } from "@/lib/types"
+import type { EstimateSettings, LineItem } from "../lib/types"
 
 export const defaultEstimate: EstimateSettings = {
   laborRate: 60,
