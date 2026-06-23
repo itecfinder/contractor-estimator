@@ -1,3 +1,11 @@
+"use client"
+
+import { ChevronRight, FolderClock, Plus } from "lucide-react"
+import { useApp } from "@/lib/store"
+import { computeTotals } from "@/lib/services/pricing"
+import { projectTypeLabels } from "@/lib/i18n"
+import { Button } from "@/components/ui/button"
+import { StatusBadge } from "../status-badge"
 export function History() {
   const { t, lang, projects, openProject, startProject, money } = useApp()
 
