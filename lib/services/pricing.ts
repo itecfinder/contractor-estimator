@@ -1,4 +1,5 @@
 import type { EstimateSettings, LineItem } from "@/lib/types"
+
 export const defaultEstimate: EstimateSettings = {
   laborRate: 60,
   wastePct: 10,
@@ -28,7 +29,9 @@ export function computeTotals(
 
     if (it.type === "material") {
       materials += line * (1 + s.wastePct / 100)
-    else labor += line
+    } else {
+      labor += line
+    }
   }
 
   const subtotal = materials + labor
