@@ -8,9 +8,8 @@ import {
   useState,
   type ReactNode,
 } from "react"
-
-import { computeTotals, type Totals } from "@/services/pricing"
-import { blankProject } from "@/services/projects"
+import { computeTotals, type Totals } from "@/lib/services/pricing"
+import { blankProject } from "@/lib/services/projects"
 import { translate, type DictKey } from "./i18n"
 
 import type {
