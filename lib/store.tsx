@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react"
+
 import { translate, type DictKey } from "./i18n"
 import { uid } from "./mock"
 import type {
@@ -57,15 +58,18 @@ export type Totals = {
 export function computeTotals(items: LineItem[], s: EstimateSettings): Totals {
   let materials = 0
   let labor = 0
+
   for (const it of items) {
     const line = it.qty * it.unitPrice
     if (it.type === "material") materials += line * (1 + s.wastePct / 100)
     else labor += line
   }
+
   const subtotal = materials + labor
   const withProfit = subtotal * (1 + s.profitPct / 100) - s.discount
   const tax = withProfit * (s.taxPct / 100)
   const total = withProfit + tax
+
   return {
     materials: +materials.toFixed(2),
     labor: +labor.toFixed(2),
@@ -80,16 +84,22 @@ type Ctx = {
   lang: Lang
   setLang: (l: Lang) => void
   t: (k: DictKey) => string
+
   screen: ScreenKey
   go: (s: ScreenKey) => void
+  goForce: (s: ScreenKey) => void
+
   business: BusinessProfile
   setBusiness: (b: BusinessProfile) => void
+
   projects: Project[]
   current: Project | null
+
   startProject: (type?: ProjectTypeKey | null) => void
   openProject: (id: string) => void
   updateCurrent: (patch: Partial<Project>) => void
   saveCurrent: () => void
+
   totals: Totals
   money: (n: number) => string
 }
@@ -99,8 +109,10 @@ const AppContext = createContext<Ctx | null>(null)
 export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>("en")
   const [screen, setScreen] = useState<ScreenKey>("dashboard")
+
   const [projects, setProjects] = useState<Project[]>([])
   const [current, setCurrent] = useState<Project | null>(null)
+
   const [business, setBusiness] = useState<BusinessProfile>({
     name: "",
     category: "",
@@ -113,22 +125,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   })
 
   const t = useCallback((k: DictKey) => translate(k, lang), [lang])
+
   const go = useCallback((s: ScreenKey) => setScreen(s), [])
+
+  // simple "force navigation" wrapper
+  const goForce = useCallback((s: ScreenKey) => {
+    setScreen(s)
+  }, [])
 
   const startProject = useCallback((type: ProjectTypeKey | null = null) => {
     setCurrent(blankProject(type))
-    setScreen("capture")
-  }, [])
+    goForce("projectCapture")
+  }, [goForce])
 
   const openProject = useCallback(
     (id: string) => {
       const p = projects.find((x) => x.id === id)
-      if (p) {
-        setCurrent({ ...p })
-        setScreen(p.status === "draft" ? "capture" : "estimate")
-      }
+      if (!p) return
+
+      setCurrent({ ...p })
+      goForce(p.status === "draft" ? "projectCapture" : "estimate")
     },
-    [projects],
+    [projects, goForce],
   )
 
   const updateCurrent = useCallback((patch: Partial<Project>) => {
@@ -138,10 +156,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const saveCurrent = useCallback(() => {
     setCurrent((c) => {
       if (!c) return c
+
       setProjects((prev) => {
         const exists = prev.some((p) => p.id === c.id)
-        return exists ? prev.map((p) => (p.id === c.id ? c : p)) : [c, ...prev]
+        return exists
+          ? prev.map((p) => (p.id === c.id ? c : p))
+          : [c, ...prev]
       })
+
       return c
     })
   }, [])
@@ -159,7 +181,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     () =>
       current
         ? computeTotals(current.lineItems, current.estimate)
-        : { materials: 0, labor: 0, subtotal: 0, withProfit: 0, tax: 0, total: 0 },
+        : {
+            materials: 0,
+            labor: 0,
+            subtotal: 0,
+            withProfit: 0,
+            tax: 0,
+            total: 0,
+          },
     [current],
   )
 
@@ -169,6 +198,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     t,
     screen,
     go,
+    goForce,
     business,
     setBusiness,
     projects,
@@ -181,7 +211,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     money,
   }
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>
+  return (
+    <AppContext.Provider value={value}>{children}</AppContext.Provider>
+  )
 }
 
 export function useApp() {
