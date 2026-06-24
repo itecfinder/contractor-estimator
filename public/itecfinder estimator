@@ -1,8 +1,9 @@
 export const metadata: Metadata = {
-  title: 'itecfinder Estimator ',
-  description: '...',
+  title: 'itecfinder Estimator',
+  description:
+    'Bilingual (EN/ES) field app for contractors: scan projects, estimate materials & labor, compare prices, and send invoices.',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/itecfinder-estimator.png',
     apple: '/apple-icon.png',
   },
 }
