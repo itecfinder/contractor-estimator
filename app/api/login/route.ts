@@ -6,16 +6,17 @@ export async function POST(req: Request) {
 
     if (!email || !email.includes("@")) {
       return NextResponse.json(
-        { error: "Please enter a valid email address" },
+        { error: "Please enter a valid email" },
         { status: 400 }
       )
     }
 
+    // TEMP AUTH
+    // Later this will call the BD API
+
     const response = NextResponse.json({
       success: true,
-      user: {
-        email,
-      },
+      user: { email },
     })
 
     response.cookies.set({
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     })
 
     return response
