@@ -6,17 +6,16 @@ export async function POST(req: Request) {
 
     if (!email || !email.includes("@")) {
       return NextResponse.json(
-        { error: "Please enter a valid email" },
+        { error: "Invalid email" },
         { status: 400 }
       )
     }
 
-    const response = NextResponse.json({
+    const res = NextResponse.json({
       success: true,
-      user: { email },
     })
 
-    response.cookies.set({
+    res.cookies.set({
       name: "session",
       value: JSON.stringify({
         email,
@@ -26,15 +25,13 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
     })
 
-    return response
-  } catch (error) {
-    console.error("Login error:", error)
-
+    return res
+  } catch (err) {
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { error: "Server error" },
       { status: 500 }
     )
   }
