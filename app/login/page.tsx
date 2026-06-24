@@ -26,8 +26,8 @@ export default function LoginPage() {
       if (!res.ok) {
         throw new Error("Login failed")
       }
-
-      router.push("/dashboard")
+      
+      router.replace("/dashboard")
     } catch (error) {
       console.error(error)
       alert("Unable to login")
