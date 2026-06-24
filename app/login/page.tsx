@@ -23,10 +23,8 @@ export default function LoginPage() {
         body: JSON.stringify({ email }),
       })
 
-      const data = await res.json()
-
       if (!res.ok) {
-        throw new Error(data.error || "Login failed")
+        throw new Error("Login failed")
       }
 
       router.push("/dashboard")
@@ -41,7 +39,6 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <div className="w-full max-w-sm space-y-6">
-
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-semibold">Welcome</h1>
           <p className="text-sm text-muted-foreground">
@@ -63,7 +60,6 @@ export default function LoginPage() {
         >
           {loading ? "Continuing..." : "Continue"}
         </Button>
-
       </div>
     </div>
   )
