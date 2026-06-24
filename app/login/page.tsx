@@ -15,10 +15,24 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      // TEMP AUTH (replace later with BD auth API)
-      localStorage.setItem("bd_user_email", email)
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Login failed")
+      }
 
       router.push("/dashboard")
+    } catch (error) {
+      console.error(error)
+      alert("Unable to login")
     } finally {
       setLoading(false)
     }
@@ -28,7 +42,6 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <div className="w-full max-w-sm space-y-6">
 
-        {/* Title */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-semibold">Welcome</h1>
           <p className="text-sm text-muted-foreground">
@@ -36,7 +49,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Email input */}
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -44,7 +56,6 @@ export default function LoginPage() {
           className="w-full rounded-md border px-3 py-2 text-sm"
         />
 
-        {/* Continue button */}
         <Button
           onClick={handleContinue}
           disabled={!email.includes("@") || loading}
