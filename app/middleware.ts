@@ -2,16 +2,18 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get("session")?.value
+  const session = req.cookies.get("session")?.value
 
-  const isLogin = req.nextUrl.pathname.startsWith("/login")
-  const isAuthAPI = req.nextUrl.pathname.startsWith("/api")
+  const isLoginPage = req.nextUrl.pathname.startsWith("/login")
+  const isApi = req.nextUrl.pathname.startsWith("/api")
 
-  if (isLogin || isAuthAPI) {
+  // allow login + api routes
+  if (isLoginPage || isApi) {
     return NextResponse.next()
   }
 
-  if (!token) {
+  // block everything else if not logged in
+  if (!session) {
     return NextResponse.redirect(new URL("/login", req.url))
   }
 
